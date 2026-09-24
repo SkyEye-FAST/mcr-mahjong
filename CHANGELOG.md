@@ -1,12 +1,25 @@
 # Changelog
 
-## 0.1.0
+## 0.1.0 (unreleased; rules review pending)
 
-Initial standalone Kotlin/JVM 17 release of the pinned MIT-licensed
+Separate the public WMO-2006-English profile from the pinned upstream compatibility
+engine. Remove the five-point mixed-kong public enum entry and the public initial-hand
+flag before release. Apply the sourced mixed-kong, concealed-kong, self-draw and
+fan-combination adjustments to each candidate before maximum-score selection.
+The complete upstream oracle vocabulary and its frozen regression tables are retained.
+The fixed scoring profile is exposed as `McrMahjong.SCORING_PROFILE`. Mixed kongs
+use the standard rulebook entry with a validated `FanCount.isMixedKongPair` marker
+and an explicit six-point subtotal, not an extra fan or fictitious extra kong.
+
+Add generated Kotlin/JVM ABI checks, publication-content verification and Maven
+Local plus both consumer verifications to normal CI. Native C++ differential tests
+remain opt-in. No formal version tag or public publication is made by this change.
+
+Initial standalone Kotlin/JVM 17 candidate based on the pinned MIT-licensed
 mahjong-algorithm shanten and fan calculator. Provides typed tile/meld/hand and
 win-context models, complete fan counts, structural shanten, effective tiles,
-waits and discard analysis. Includes all upstream default rule switches and
-documented upstream quirks rather than independently redefining them.
+waits and discard analysis. The raw compatibility engine retains upstream switches
+and quirks; public scoring uses the separately documented rules adapter.
 
 Release hardening makes aggregate result construction private, hides internal
 packing helpers from Java source, rejects null collection elements and fan-point

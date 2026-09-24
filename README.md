@@ -1,6 +1,12 @@
 # mcr-mahjong
 
 A standalone **Kotlin/JVM 17** library for Mahjong Competition Rules (国标麻将).
+
+**Unreleased candidate:** public scoring explicitly targets the WMO 2006 English
+reference described in [COMPATIBILITY.md](COMPATIBILITY.md), not the upstream's
+house-rule defaults or every rule set called “国标”. Its 81-fan public API and
+the 82-entry C++ compatibility baseline are separate. Formal publication remains
+on hold until this rules profile and its documented combinations are accepted.
 The only direct library dependency is Kotlin's standard library, which brings
 JetBrains annotations transitively. There are no Minecraft, mod-loader,
 native-library, JNI or Python dependencies.
@@ -16,8 +22,17 @@ The library provides regular-hand, seven-pairs, thirteen-orphans,
 honors-and-knitted (全不靠 / 七星不靠) and knitted-straight (组合龙) shanten and
 effective tiles; structural waits and discard analysis; and the complete upstream
 fan calculator, including competing decompositions, fan exclusions and tie-breaking.
-All 81 standard fans are represented, plus the upstream's enabled five-point
-concealed-and-melded-kong compatibility entry.
+All 81 public fans are represented. The upstream-only five-point mixed-kong entry
+is internal: the public scorer applies the rulebook's six-point combination and
+eight-point Two Concealed Kongs. Corrections are applied before choosing the best
+decomposition; they are not a rescaling of an already-selected upstream result.
+
+`McrMahjong.SCORING_PROFILE` identifies this fixed contract as `wmo-2006-en`.
+For the mixed-kong exception, the result has one entry under the rulebook's
+`TWO_MELDED_KONGS` category with `FanCount.isMixedKongPair == true` and
+`FanCount.points == 6`. It does not also award the individual kongs. Display that
+flagged case as one exposed and one concealed kong, and sum `FanCount.points`,
+not the base `Fan.points` values. The marker is validated, not an arbitrary score override.
 
 This is an algorithm library, not a game/turn engine. Structural readiness and
 winning shape are separate from the eight-point minimum and from whether a
@@ -40,7 +55,7 @@ On Windows use `gradlew.bat`. The artifact coordinates are:
 
 ```kotlin
 repositories {
-    mavenLocal() // until the artifact is published to a shared repository
+    mavenLocal() // unpublished candidate; local verification only
     mavenCentral()
 }
 dependencies {
@@ -123,9 +138,12 @@ val score = McrMahjong.score(
 
 `lastTile` means the last available copy (和绝张); `wallLast` means the last wall
 tile. `kongInvolved` denotes replacement-tile self-draw or robbing a kong according
-to `method`. `initial` affects upstream initial-hand interpretation; blessing
-fans themselves are disabled. The calculator preserves upstream's automatic
-correction of contradictory last-copy/kong flags.
+to `method`. There is no public initial-hand/blessing switch. The calculator preserves
+upstream's automatic correction of contradictory last-copy/kong flags. For one
+concealed and one exposed kong, the result identifies fan 57's six-point exception
+with `FanCount.isMixedKongPair`. Read its `points` subtotal (6), not `fan.points * count`;
+the flag distinguishes it from two physically exposed kongs. The individual kong
+fans are not scored again. Use `Hand.melds` for the physical composition.
 
 ### Results and validation
 
@@ -170,13 +188,15 @@ if (result instanceof ScoreResult.Winning win) {
 `build` runs the small native-free regression suite, including frozen C++ fan
 tables covering every enabled fan, special-form shanten/useful/wait sets, complete
 discard-output digests, validation, immutable boundaries and Java interoperability.
-The normal CI only runs this suite on JDK 17.
+Normal CI runs on JDK 17 and includes the generated public ABI check, publication
+content verification, Maven Local publication and both independent consumers.
+Public standard-rule tests are separate from the frozen upstream regression tests.
 
 Native differential testing is explicitly opt-in, uses a fixed random seed and
 compares complete outputs rather than just totals. See [tools/README.md](tools/README.md).
 Neither the upstream C++ checkout nor compiled oracle is shipped in the library.
 
-Before using the release artifact, verify both independent consumers after publishing:
+To verify the unpublished candidate and both independent consumers:
 
 ```shell
 ./gradlew publishToMavenLocal
@@ -187,3 +207,14 @@ The [consumer build](consumers/README.md) has a plain Java project using only th
 Maven POM and a Kotlin project using Gradle module metadata. Neither depends on
 the library's project/source sets. The artifact must exist in Maven Local;
 consumer resolution never substitutes a remote copy of `mcr-mahjong`.
+
+### Public ABI
+
+The Kotlin Gradle plugin generates the reference dump under `api/`; `checkKotlinAbi`
+is part of `build` and fails on unreviewed public signature changes. The entire
+`internal` package is excluded. Run `./gradlew updateKotlinAbi` only after a deliberate
+API change, review the generated diff, then run `./gradlew checkKotlinAbi` separately
+and verify the consumers. Never hand-edit the dump or refresh it in CI.
+
+ABI validation is not rule verification. It does not, for example, detect a changed
+fan value behind an unchanged getter; the independent rule tests remain necessary.

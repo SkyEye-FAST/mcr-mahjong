@@ -1,9 +1,13 @@
 This project is a Kotlin/JVM port of mahjong-algorithm by Jeff Wang.
+Public scoring uses the separate wmo-2006-en adapter documented in COMPATIBILITY.md.
+The switches below describe the internal compatibility engine, not a claim that
+the upstream defaults define standard MCR. No rules-body endorsement is implied.
 Upstream: https://github.com/summerinsects/mahjong-algorithm
 Pinned commit: 44a178af08bf11f82a8993fddbe2fe8876ddd8f3
 
 Ported sources: tile.h, shanten.h, shanten.cpp, fan_calculator.h, fan_calculator.cpp.
 Regression cases are derived from upstream unit_test.cpp.
+Independent public-rule assertions are separate from these upstream fixtures.
 The optional oracle also compiles the unmodified upstream stringify.h/cpp.
 The upstream copyright year range is preserved verbatim, not inferred from
 the date of this port. See LICENSE for the original MIT permission notice.
