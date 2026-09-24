@@ -11,6 +11,20 @@
 
 using namespace mahjong;
 
+#ifndef MCR_UPSTREAM_FINGERPRINT
+#error Build the oracle with tools/CMakeLists.txt to verify all pinned source hashes.
+#endif
+
+static_assert(SUPPORT_CONCEALED_KONG_AND_MELDED_KONG == 1);
+static_assert(KNITTED_STRAIGHT_BODY_WITH_ECS == 1);
+static_assert(DISTINGUISH_PURE_SHIFTED_CHOWS == 0);
+static_assert(NINE_GATES_WHEN_BLESSING_OF_HEAVEN == 1);
+static_assert(SUPPORT_BLESSINGS == 0);
+static_assert(FAN_TABLE_SIZE == 83);
+#ifdef STRICT_98_RULE
+#error The oracle must use the pinned default rule profile.
+#endif
+
 static std::string useful_bits(const useful_table_t &table) {
     std::string bits;
     for (tile_t tile : standard_tiles<>::all) bits += table[tile] ? '1' : '0';
@@ -22,6 +36,12 @@ int main() {
     while (std::getline(std::cin, line)) {
         // Windows PowerShell's redirected StreamWriter may prepend a UTF-8 BOM.
         if (line.compare(0, 3, "\xEF\xBB\xBF") == 0) line.erase(0, 3);
+        if (line == "V") {
+            std::cout << MCR_UPSTREAM_FINGERPRINT;
+            for (int i = 1; i < FAN_TABLE_SIZE; ++i) std::cout << ',' << fan_value<>::table[i];
+            std::cout << std::endl;
+            continue;
+        }
         std::istringstream in(line);
         std::vector<std::string> fields;
         std::string field;

@@ -1,6 +1,6 @@
 param(
-    [string]$Upstream = 'build/upstream',
-    [string]$Oracle = 'build/oracle.exe'
+    [string]$Upstream = '.reference/upstream',
+    [string]$Oracle = '.reference/oracle/oracle.exe'
 )
 $ErrorActionPreference = 'Stop'
 $revision = & git -C $Upstream rev-parse HEAD
@@ -72,7 +72,11 @@ try {
         '3369m147s258pEEE3m', '1223358m147s369p3m', '2233458m147s369p3m',
         '2358m147s369pEEE3m', '1122233334444s2s', '33469m258s147pWW2m',
         '234s2233445678p8p', '445566m2277779s8s', 'EESSWWNNCCFFPP',
-        '[2222s][3333s][5555p1]67mEE8m', '1112345678999p9p'
+        '[2222s][3333s][5555p1]67mEE8m', '1112345678999p9p',
+        '112233456789mEE', '123445566789sSS', '123456778899pWW',
+        '1123355778899s2s', '1122335778899p5p',
+        '445566m5s445566p5s', '[CCC]11123444789p', '[CCC]45666678999p',
+        '[456s2][234s3]1223678s2s', '[567m]2333445667m8m', '123456m45679p66s8p'
     )
     foreach ($row in $rows) {
         if ($row.Request.Split('|')[1] -in $regressions -and !$selected.Contains($row)) { $selected.Add($row) }

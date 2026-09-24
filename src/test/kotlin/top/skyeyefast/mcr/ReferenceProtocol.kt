@@ -2,6 +2,7 @@ package top.skyeyefast.mcr
 
 import java.io.Closeable
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.Executors
 
 /** Test-only support for the pinned upstream's bracket notation and oracle protocol. */
 internal object ReferenceProtocol {
@@ -53,6 +54,7 @@ internal object ReferenceProtocol {
             }
             "S" -> {
                 val result = McrMahjong.analyze(hand)
+                check(McrMahjong.shanten(hand) == result.shanten) { "Shanten-only path differs: $request" }
                 HandForm.entries.joinToString(";") { form ->
                     val analysis = result.forms.firstOrNull { it.form == form }
                     "${analysis?.shanten ?: Int.MAX_VALUE},${bits(analysis?.effectiveTiles?.map { it.tile } ?: emptyList())}"
@@ -82,17 +84,35 @@ internal class Oracle(path: String) : Closeable {
     private val process = ProcessBuilder(path).redirectError(ProcessBuilder.Redirect.INHERIT).start()
     private val input = process.outputStream.bufferedWriter()
     private val output = process.inputStream.bufferedReader()
+    private val reader = Executors.newSingleThreadExecutor { job ->
+        Thread(job, "mcr-oracle-io").apply { isDaemon = true }
+    }
 
     fun query(request: String): String {
-        input.write(request)
-        input.newLine()
-        input.flush()
-        return requireNotNull(output.readLine()) { "Native oracle exited while handling: $request" }
+        val response = reader.submit<String> {
+            input.write(request)
+            input.newLine()
+            input.flush()
+            requireNotNull(output.readLine()) { "Native oracle exited while handling: $request" }
+        }
+        return try {
+            response.get(5, TimeUnit.SECONDS)
+        } catch (failure: Exception) {
+            process.destroyForcibly()
+            response.cancel(true)
+            throw IllegalStateException("Native oracle failed or timed out: $request", failure)
+        }
     }
 
     override fun close() {
-        input.close()
-        if (!process.waitFor(3, TimeUnit.SECONDS)) process.destroyForcibly()
-        output.close()
+        try {
+            input.close()
+            check(process.waitFor(3, TimeUnit.SECONDS)) { "Native oracle did not exit" }
+            check(process.exitValue() == 0) { "Native oracle exit code: ${process.exitValue()}" }
+        } finally {
+            if (process.isAlive) process.destroyForcibly()
+            reader.shutdownNow()
+            output.close()
+        }
     }
 }

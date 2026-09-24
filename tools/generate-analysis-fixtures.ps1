@@ -1,6 +1,6 @@
 param(
-    [string]$Upstream = 'build/upstream',
-    [string]$Oracle = 'build/oracle.exe'
+    [string]$Upstream = '.reference/upstream',
+    [string]$Oracle = '.reference/oracle/oracle.exe'
 )
 $ErrorActionPreference = 'Stop'
 $revision = & git -C $Upstream rev-parse HEAD

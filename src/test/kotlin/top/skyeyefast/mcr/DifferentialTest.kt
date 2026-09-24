@@ -5,18 +5,42 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Timeout
 import java.nio.file.Files
 import java.nio.file.Path
+import java.security.MessageDigest
 import java.util.Random
 import kotlin.test.assertEquals
 
 @Tag("differential")
 class DifferentialTest {
+    private fun verifyUpstream(): String {
+        val root = Path.of(".reference/upstream")
+        val hashes = Files.readAllLines(Path.of("tools/upstream.sha256"))
+            .filter { it.isNotBlank() && !it.startsWith('#') }
+        assertEquals(9, hashes.size, "All upstream source files and LICENSE must be pinned")
+        for (line in hashes) {
+            val (expected, name) = line.split(Regex("\\s+"), limit = 2)
+            val text = Files.readString(root.resolve(name)).removePrefix("\uFEFF").replace("\r\n", "\n")
+            val actual = MessageDigest.getInstance("SHA-256").digest(text.toByteArray(Charsets.UTF_8))
+                .joinToString("") { "%02x".format(it) }
+            assertEquals(expected, actual, "Upstream file differs from NOTICE: $name")
+        }
+        return Files.readString(root.resolve("unit_test.cpp"))
+    }
+
     @Test
     @Timeout(90)
     fun pinnedUpstreamAndDeterministicCorpus() {
         val oraclePath = requireNotNull(System.getProperty("mcr.oracle"))
+        val source = verifyUpstream()
         var scores = 0; var analyses = 0; var discards = 0
         Oracle(oraclePath).use { oracle ->
+            val manifest = Files.readString(Path.of("tools/upstream.sha256")).replace("\r\n", "\n")
+            val fingerprint = MessageDigest.getInstance("SHA-256").digest(manifest.toByteArray(Charsets.UTF_8))
+                .joinToString("") { "%02x".format(it) }
+            assertEquals(fingerprint + "," + Fan.entries.joinToString(",") { it.points.toString() },
+                oracle.query("V"), "Oracle revision/profile/fan values")
+            val seen = HashSet<String>()
             fun check(request: String) {
+                if (!seen.add(request)) return
                 assertEquals(oracle.query(request), ReferenceProtocol.calculate(request), request)
                 when (request[0]) { 'F' -> scores++; 'S' -> analyses++; 'D' -> discards++ }
             }
@@ -26,13 +50,14 @@ class DifferentialTest {
                     lines.filter { it.isNotBlank() && !it.startsWith('#') }.forEach { check(it.substringBefore('\t')) }
                 }
             }
-            // Optional: every active upstream test_points call, not just selected regressions.
-            val source = Path.of("build/upstream/unit_test.cpp")
-            if (Files.exists(source)) {
+            // Every active upstream test_points call is mandatory, not silently optional.
+            run {
                 val pattern = Regex("(?m)^\\s*test_points\\(\"([^\"]+)\",\\s*([^,]+),\\s*wind_t::(\\w+),\\s*wind_t::(\\w+)\\)")
                 val flags = mapOf("WIN_FLAG_DISCARD" to 0, "WIN_FLAG_SELF_DRAWN" to 1, "WIN_FLAG_LAST_TILE" to 2,
                     "WIN_FLAG_KONG_INVOLVED" to 4, "WIN_FLAG_WALL_LAST" to 8, "WIN_FLAG_INITIAL" to 16)
-                for (match in pattern.findAll(Files.readString(source))) {
+                val matches = pattern.findAll(source).toList()
+                assertEquals(214, matches.size, "Pinned upstream test_points inventory changed")
+                for (match in matches) {
                     val v = match.groupValues
                     val flag = v[2].split('|').fold(0) { acc, name -> acc or flags.getValue(name.trim()) }
                     check("F|${v[1]}|$flag|${Wind.valueOf(v[3]).ordinal}|${Wind.valueOf(v[4]).ordinal}|0")
@@ -117,6 +142,38 @@ class DifferentialTest {
                 check("F|$text${win.notation}|${random.nextInt(32)}|${random.nextInt(4)}|${random.nextInt(4)}|0")
                 if (special < 30) check("S|$text")
                 special++
+            }
+            // Special families are rare in ordinary random hands. Exercise them directly.
+            repeat(64) { index ->
+                val counts = IntArray(34)
+                val pairs = ArrayList<Tile>()
+                while (pairs.size < 14) {
+                    val tile = Tile.entries[random.nextInt(34)]
+                    if (counts[tile.ordinal] == 4) continue
+                    counts[tile.ordinal] += 2
+                    pairs.add(tile); pairs.add(tile)
+                }
+                java.util.Collections.shuffle(pairs, random)
+                val win = pairs.removeLast()
+                val text = pairs.joinToString("") { it.notation }
+                check("F|$text${win.notation}|${index % 2}|0|1|0")
+                if (index < 8) check("S|$text")
+            }
+            for (sequence in knitted) {
+                // Both honors-and-knitted fans, including lesser + knitted-straight.
+                for (honorCount in 5..7) {
+                    val tiles = Tiles.parse(sequence).take(14 - honorCount) + Tile.entries.filter { it.isHonor }.take(honorCount)
+                    val text = tiles.joinToString("") { it.notation }
+                    check("F|$text|0|0|1|0")
+                    check("S|${tiles.dropLast(1).joinToString("") { it.notation }}")
+                }
+                // A fixed fourth group can be a concealed, exposed or promoted kong.
+                for (offer in listOf("", "1", "5")) {
+                    check("F|[EEEE$offer]${sequence}NN|5|0|1|0")
+                }
+            }
+            for (pair in Tiles.parse("19m19s19pESWNCFP")) {
+                check("F|19m19s19pESWNCFP${pair.notation}|1|0|1|0")
             }
         }
         println("C++ parity: $scores score tables, $analyses shanten/wait tables, $discards complete discard analyses")

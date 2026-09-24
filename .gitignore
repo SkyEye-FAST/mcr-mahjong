@@ -1,6 +1,5 @@
 .reference/
 .gradle/
-.reference/
 .kotlin/
 build/
 .idea/
