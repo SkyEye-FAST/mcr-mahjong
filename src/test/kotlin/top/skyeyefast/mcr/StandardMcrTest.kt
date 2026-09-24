@@ -102,6 +102,50 @@ class StandardMcrTest {
     }
 
     @Test
+    fun knittedDragonWaitFansUseOnlyTheUniqueResidualWait() {
+        // WMO Chinese MCR, Combination Dragon example (printed p. 35) combines
+        // the knitted body with a residual wait. Wait definitions (pp. 45-46)
+        // require that the residual hand has only that winning tile. These cases
+        // deliberately use a winning tile also present in the knitted body; the
+        // residual can use only its separate physical copy. Each 19-point total
+        // sums the selected fans using the Chinese table values (pp. 12-14).
+        val cases = listOf(
+            Triple("1233369m147s258p3m", Fan.EDGE_WAIT, 19),
+            Triple("2333469m147s258p3m", Fan.CLOSED_WAIT, 19),
+            Triple("3369m147s258pEEE3m", Fan.SINGLE_WAIT, 19),
+        )
+        for ((text, waitFan, total) in cases) {
+            val result = score(text)
+            assertEquals(1, result.count(Fan.KNITTED_STRAIGHT), text)
+            assertEquals(1, result.count(waitFan), text)
+            for (otherWait in listOf(Fan.EDGE_WAIT, Fan.CLOSED_WAIT, Fan.SINGLE_WAIT) - waitFan) {
+                assertEquals(0, result.count(otherWait), text)
+            }
+            assertEquals(total, result.totalFan, text)
+            assertTrue(result.meetsMinimum, text)
+            assertEquals(result.totalFan, result.fans.sumOf { it.points }, text)
+        }
+
+        // Here the 3m only completes the knitted body; the chow and pair in the
+        // residual were already complete, so no wait fan can be added.
+        val bodyOnly = score("45669m147s258pEE3m")
+        assertEquals(1, bodyOnly.count(Fan.KNITTED_STRAIGHT))
+        assertEquals(0, bodyOnly.count(Fan.EDGE_WAIT))
+        assertEquals(0, bodyOnly.count(Fan.CLOSED_WAIT))
+        assertEquals(0, bodyOnly.count(Fan.SINGLE_WAIT))
+
+        // Residual 2344 before the win has two waits (1 and 4); the winning 4
+        // completes a legal hand but no wait fan is unique.
+        val ambiguous = score("1234447m258s369p4m")
+        assertEquals(1, ambiguous.count(Fan.KNITTED_STRAIGHT))
+        assertEquals(0, ambiguous.count(Fan.EDGE_WAIT))
+        assertEquals(0, ambiguous.count(Fan.CLOSED_WAIT))
+        assertEquals(0, ambiguous.count(Fan.SINGLE_WAIT))
+        assertTrue(ambiguous.meetsMinimum)
+        assertEquals(ambiguous.totalFan, ambiguous.fans.sumOf { it.points })
+    }
+
+    @Test
     fun allTerminalsMayAddDoublePungsButDoesNotDoubleCountATriple() {
         // Chinese MCR Annex I, All Terminals (printed p. 26) explicitly shows
         // two Double Pungs; the triple-pung example must not split those pungs.
