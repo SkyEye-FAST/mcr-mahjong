@@ -9,7 +9,8 @@ house-rule default or every rule set called “国标”. Its 81-fan public API 
 82-entry C++ compatibility baseline are separate. This remains a local, unreleased
 `0.1.0` candidate. Audited rule interpretations and their Chinese page references
 are recorded in [COMPATIBILITY.md](COMPATIBILITY.md), including Combination Dragon
-residual waits.
+residual waits. The rules review for this profile is complete; the release still
+awaits remote CI and a signed version tag.
 The only direct library dependency is Kotlin's standard library, which brings
 JetBrains annotations transitively. There are no Minecraft, mod-loader,
 native-library, JNI or Python dependencies.
@@ -78,12 +79,26 @@ Dokka HTML API reference (`index.html`) and usage/compatibility guides under
 Kotlin standard library is an API dependency so Java consumers can also use
 Kotlin-generated public members such as enum entries without adding dependencies.
 
-No remote Maven repository, credentials or artifact signing are configured, and
-this version is not advertised as published to Maven Central. The POM includes
-coordinates, description, MIT license, developer identity, Java-compatible
-dependency scopes and the pinned upstream commit. There is no hosted project
-remote yet, so project/SCM URLs are deliberately omitted instead of fabricated.
-Git commit signing is independent of Maven artifact signing.
+The public project repository is [SkyEye-FAST/mcr-mahjong](https://github.com/SkyEye-FAST/mcr-mahjong).
+The POM includes project and SCM URLs, coordinates, description, MIT license,
+developer identity, Java-compatible dependency scopes, the pinned upstream commit,
+and the completed `wmo-2014-zh` rule-review status. It does not encode a temporary
+publication state.
+
+Maven Central publishing is configured through the [Central Portal publisher
+API](https://central.sonatype.org/publish/publish-portal-api/) with the community
+[GradleUp NMCP plugin](https://gradleup.com/nmcp/) 1.6.2 and Gradle's OpenPGP
+signing plugin. Sonatype currently documents no official Gradle plugin for the
+Portal. The Portal is configured for `USER_MANAGED` publishing, so a submitted
+bundle requires a separate review and release in the Portal. Supply credentials
+outside the repository through Gradle user properties or these environment
+variables: `CENTRAL_PORTAL_USERNAME`, `CENTRAL_PORTAL_PASSWORD`,
+`MAVEN_CENTRAL_SIGNING_KEY` (ASCII-armored private key), and
+`MAVEN_CENTRAL_SIGNING_PASSWORD`. Use a primary key accepted by Central and,
+before upload, publish its public part to a [key server supported by
+Sonatype](https://central.sonatype.org/publish/requirements/gpg/).
+No publishing credentials or key material are stored in this repository. This
+`0.1.0` candidate has not been uploaded to Maven Central.
 
 ## Kotlin
 
