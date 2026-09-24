@@ -1,0 +1,378 @@
+public final class top/skyeyefast/mcr/ChowPosition : java/lang/Enum {
+	public static final field HIGH Ltop/skyeyefast/mcr/ChowPosition;
+	public static final field LOW Ltop/skyeyefast/mcr/ChowPosition;
+	public static final field MIDDLE Ltop/skyeyefast/mcr/ChowPosition;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Ltop/skyeyefast/mcr/ChowPosition;
+	public static fun values ()[Ltop/skyeyefast/mcr/ChowPosition;
+}
+
+public final class top/skyeyefast/mcr/DiscardAnalysis {
+	public synthetic fun <init> (Ltop/skyeyefast/mcr/Tile;Ltop/skyeyefast/mcr/HandAnalysis;Ljava/util/Set;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getAnalysis ()Ltop/skyeyefast/mcr/HandAnalysis;
+	public final fun getCompletesForms ()Ljava/util/Set;
+	public final fun getDiscard ()Ltop/skyeyefast/mcr/Tile;
+	public final fun getEffectiveTiles ()Ljava/util/List;
+	public final fun getRemainingCount ()I
+	public final fun getShanten ()I
+}
+
+public final class top/skyeyefast/mcr/EffectiveTile {
+	public fun <init> (Ltop/skyeyefast/mcr/Tile;I)V
+	public final fun component1 ()Ltop/skyeyefast/mcr/Tile;
+	public final fun component2 ()I
+	public final fun copy (Ltop/skyeyefast/mcr/Tile;I)Ltop/skyeyefast/mcr/EffectiveTile;
+	public static synthetic fun copy$default (Ltop/skyeyefast/mcr/EffectiveTile;Ltop/skyeyefast/mcr/Tile;IILjava/lang/Object;)Ltop/skyeyefast/mcr/EffectiveTile;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getRemainingCopies ()I
+	public final fun getTile ()Ltop/skyeyefast/mcr/Tile;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class top/skyeyefast/mcr/Fan : java/lang/Enum {
+	public static final field ALL_CHOWS Ltop/skyeyefast/mcr/Fan;
+	public static final field ALL_EVEN_PUNGS Ltop/skyeyefast/mcr/Fan;
+	public static final field ALL_FIVE Ltop/skyeyefast/mcr/Fan;
+	public static final field ALL_GREEN Ltop/skyeyefast/mcr/Fan;
+	public static final field ALL_HONORS Ltop/skyeyefast/mcr/Fan;
+	public static final field ALL_PUNGS Ltop/skyeyefast/mcr/Fan;
+	public static final field ALL_SIMPLES Ltop/skyeyefast/mcr/Fan;
+	public static final field ALL_TERMINALS Ltop/skyeyefast/mcr/Fan;
+	public static final field ALL_TERMINALS_AND_HONORS Ltop/skyeyefast/mcr/Fan;
+	public static final field ALL_TYPES Ltop/skyeyefast/mcr/Fan;
+	public static final field BIG_FOUR_WINDS Ltop/skyeyefast/mcr/Fan;
+	public static final field BIG_THREE_DRAGONS Ltop/skyeyefast/mcr/Fan;
+	public static final field BIG_THREE_WINDS Ltop/skyeyefast/mcr/Fan;
+	public static final field CHICKEN_HAND Ltop/skyeyefast/mcr/Fan;
+	public static final field CLOSED_WAIT Ltop/skyeyefast/mcr/Fan;
+	public static final field CONCEALED_HAND Ltop/skyeyefast/mcr/Fan;
+	public static final field CONCEALED_KONG Ltop/skyeyefast/mcr/Fan;
+	public static final field DOUBLE_PUNG Ltop/skyeyefast/mcr/Fan;
+	public static final field DRAGON_PUNG Ltop/skyeyefast/mcr/Fan;
+	public static final field EDGE_WAIT Ltop/skyeyefast/mcr/Fan;
+	public static final field FLOWER_TILES Ltop/skyeyefast/mcr/Fan;
+	public static final field FOUR_CONCEALED_PUNGS Ltop/skyeyefast/mcr/Fan;
+	public static final field FOUR_KONGS Ltop/skyeyefast/mcr/Fan;
+	public static final field FOUR_PURE_SHIFTED_CHOWS Ltop/skyeyefast/mcr/Fan;
+	public static final field FOUR_PURE_SHIFTED_PUNGS Ltop/skyeyefast/mcr/Fan;
+	public static final field FULLY_CONCEALED_HAND Ltop/skyeyefast/mcr/Fan;
+	public static final field FULL_FLUSH Ltop/skyeyefast/mcr/Fan;
+	public static final field GREATER_HONORS_AND_KNITTED_TILES Ltop/skyeyefast/mcr/Fan;
+	public static final field HALF_FLUSH Ltop/skyeyefast/mcr/Fan;
+	public static final field KNITTED_STRAIGHT Ltop/skyeyefast/mcr/Fan;
+	public static final field LAST_TILE Ltop/skyeyefast/mcr/Fan;
+	public static final field LAST_TILE_CLAIM Ltop/skyeyefast/mcr/Fan;
+	public static final field LAST_TILE_DRAW Ltop/skyeyefast/mcr/Fan;
+	public static final field LESSER_HONORS_AND_KNITTED_TILES Ltop/skyeyefast/mcr/Fan;
+	public static final field LITTLE_FOUR_WINDS Ltop/skyeyefast/mcr/Fan;
+	public static final field LITTLE_THREE_DRAGONS Ltop/skyeyefast/mcr/Fan;
+	public static final field LOWER_FOUR Ltop/skyeyefast/mcr/Fan;
+	public static final field LOWER_TILES Ltop/skyeyefast/mcr/Fan;
+	public static final field MELDED_HAND Ltop/skyeyefast/mcr/Fan;
+	public static final field MELDED_KONG Ltop/skyeyefast/mcr/Fan;
+	public static final field MIDDLE_TILES Ltop/skyeyefast/mcr/Fan;
+	public static final field MIXED_DOUBLE_CHOW Ltop/skyeyefast/mcr/Fan;
+	public static final field MIXED_SHIFTED_CHOWS Ltop/skyeyefast/mcr/Fan;
+	public static final field MIXED_SHIFTED_PUNGS Ltop/skyeyefast/mcr/Fan;
+	public static final field MIXED_STRAIGHT Ltop/skyeyefast/mcr/Fan;
+	public static final field MIXED_TRIPLE_CHOW Ltop/skyeyefast/mcr/Fan;
+	public static final field NINE_GATES Ltop/skyeyefast/mcr/Fan;
+	public static final field NO_HONORS Ltop/skyeyefast/mcr/Fan;
+	public static final field ONE_VOIDED_SUIT Ltop/skyeyefast/mcr/Fan;
+	public static final field OUTSIDE_HAND Ltop/skyeyefast/mcr/Fan;
+	public static final field OUT_WITH_REPLACEMENT_TILE Ltop/skyeyefast/mcr/Fan;
+	public static final field PREVALENT_WIND Ltop/skyeyefast/mcr/Fan;
+	public static final field PUNG_OF_TERMINALS_OR_HONORS Ltop/skyeyefast/mcr/Fan;
+	public static final field PURE_DOUBLE_CHOW Ltop/skyeyefast/mcr/Fan;
+	public static final field PURE_SHIFTED_CHOWS Ltop/skyeyefast/mcr/Fan;
+	public static final field PURE_SHIFTED_PUNGS Ltop/skyeyefast/mcr/Fan;
+	public static final field PURE_STRAIGHT Ltop/skyeyefast/mcr/Fan;
+	public static final field PURE_TERMINAL_CHOWS Ltop/skyeyefast/mcr/Fan;
+	public static final field PURE_TRIPLE_CHOW Ltop/skyeyefast/mcr/Fan;
+	public static final field QUADRUPLE_CHOW Ltop/skyeyefast/mcr/Fan;
+	public static final field REVERSIBLE_TILES Ltop/skyeyefast/mcr/Fan;
+	public static final field ROBBING_THE_KONG Ltop/skyeyefast/mcr/Fan;
+	public static final field SEAT_WIND Ltop/skyeyefast/mcr/Fan;
+	public static final field SELF_DRAWN Ltop/skyeyefast/mcr/Fan;
+	public static final field SEVEN_PAIRS Ltop/skyeyefast/mcr/Fan;
+	public static final field SEVEN_SHIFTED_PAIRS Ltop/skyeyefast/mcr/Fan;
+	public static final field SHORT_STRAIGHT Ltop/skyeyefast/mcr/Fan;
+	public static final field SINGLE_WAIT Ltop/skyeyefast/mcr/Fan;
+	public static final field THIRTEEN_ORPHANS Ltop/skyeyefast/mcr/Fan;
+	public static final field THREE_CONCEALED_PUNGS Ltop/skyeyefast/mcr/Fan;
+	public static final field THREE_KONGS Ltop/skyeyefast/mcr/Fan;
+	public static final field THREE_SUITED_TERMINAL_CHOWS Ltop/skyeyefast/mcr/Fan;
+	public static final field TILE_HOG Ltop/skyeyefast/mcr/Fan;
+	public static final field TRIPLE_PUNG Ltop/skyeyefast/mcr/Fan;
+	public static final field TWO_CONCEALED_KONGS Ltop/skyeyefast/mcr/Fan;
+	public static final field TWO_CONCEALED_PUNGS Ltop/skyeyefast/mcr/Fan;
+	public static final field TWO_DRAGONS_PUNGS Ltop/skyeyefast/mcr/Fan;
+	public static final field TWO_MELDED_KONGS Ltop/skyeyefast/mcr/Fan;
+	public static final field TWO_TERMINAL_CHOWS Ltop/skyeyefast/mcr/Fan;
+	public static final field UPPER_FOUR Ltop/skyeyefast/mcr/Fan;
+	public static final field UPPER_TILES Ltop/skyeyefast/mcr/Fan;
+	public final fun getChineseName ()Ljava/lang/String;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public final fun getPoints ()I
+	public static fun valueOf (Ljava/lang/String;)Ltop/skyeyefast/mcr/Fan;
+	public static fun values ()[Ltop/skyeyefast/mcr/Fan;
+}
+
+public final class top/skyeyefast/mcr/FanCount {
+	public fun <init> (Ltop/skyeyefast/mcr/Fan;I)V
+	public fun <init> (Ltop/skyeyefast/mcr/Fan;IZ)V
+	public synthetic fun <init> (Ltop/skyeyefast/mcr/Fan;IZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ltop/skyeyefast/mcr/Fan;
+	public final fun component2 ()I
+	public final fun component3 ()Z
+	public final fun copy (Ltop/skyeyefast/mcr/Fan;IZ)Ltop/skyeyefast/mcr/FanCount;
+	public static synthetic fun copy$default (Ltop/skyeyefast/mcr/FanCount;Ltop/skyeyefast/mcr/Fan;IZILjava/lang/Object;)Ltop/skyeyefast/mcr/FanCount;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCount ()I
+	public final fun getFan ()Ltop/skyeyefast/mcr/Fan;
+	public final fun getPoints ()I
+	public fun hashCode ()I
+	public final fun isMixedKongPair ()Z
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class top/skyeyefast/mcr/FormAnalysis {
+	public synthetic fun <init> (Ltop/skyeyefast/mcr/HandForm;ILjava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getEffectiveTiles ()Ljava/util/List;
+	public final fun getForm ()Ltop/skyeyefast/mcr/HandForm;
+	public final fun getRemainingCount ()I
+	public final fun getShanten ()I
+}
+
+public final class top/skyeyefast/mcr/Hand {
+	public fun <init> (Ljava/util/List;)V
+	public fun <init> (Ljava/util/List;Ljava/util/List;)V
+	public synthetic fun <init> (Ljava/util/List;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getConcealedTiles ()Ljava/util/List;
+	public final fun getMelds ()Ljava/util/List;
+	public fun hashCode ()I
+	public final fun remainingCopies (Ltop/skyeyefast/mcr/Tile;)I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class top/skyeyefast/mcr/HandAnalysis {
+	public synthetic fun <init> (Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getEffectiveTiles ()Ljava/util/List;
+	public final fun getForms ()Ljava/util/List;
+	public final fun getRemainingCount ()I
+	public final fun getShanten ()I
+}
+
+public final class top/skyeyefast/mcr/HandForm : java/lang/Enum {
+	public static final field HONORS_AND_KNITTED_TILES Ltop/skyeyefast/mcr/HandForm;
+	public static final field KNITTED_STRAIGHT Ltop/skyeyefast/mcr/HandForm;
+	public static final field REGULAR Ltop/skyeyefast/mcr/HandForm;
+	public static final field SEVEN_PAIRS Ltop/skyeyefast/mcr/HandForm;
+	public static final field THIRTEEN_ORPHANS Ltop/skyeyefast/mcr/HandForm;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Ltop/skyeyefast/mcr/HandForm;
+	public static fun values ()[Ltop/skyeyefast/mcr/HandForm;
+}
+
+public final class top/skyeyefast/mcr/McrMahjong {
+	public static final field INSTANCE Ltop/skyeyefast/mcr/McrMahjong;
+	public static final field SCORING_PROFILE Ljava/lang/String;
+	public static final fun analyze (Ltop/skyeyefast/mcr/Hand;)Ltop/skyeyefast/mcr/HandAnalysis;
+	public static final fun analyze (Ltop/skyeyefast/mcr/Hand;Ljava/util/List;)Ltop/skyeyefast/mcr/HandAnalysis;
+	public static synthetic fun analyze$default (Ltop/skyeyefast/mcr/Hand;Ljava/util/List;ILjava/lang/Object;)Ltop/skyeyefast/mcr/HandAnalysis;
+	public static final fun discards (Ltop/skyeyefast/mcr/Hand;Ltop/skyeyefast/mcr/Tile;)Ljava/util/List;
+	public static final fun discards (Ltop/skyeyefast/mcr/Hand;Ltop/skyeyefast/mcr/Tile;Ljava/util/List;)Ljava/util/List;
+	public static synthetic fun discards$default (Ltop/skyeyefast/mcr/Hand;Ltop/skyeyefast/mcr/Tile;Ljava/util/List;ILjava/lang/Object;)Ljava/util/List;
+	public static final fun score (Ltop/skyeyefast/mcr/Hand;Ltop/skyeyefast/mcr/Tile;)Ltop/skyeyefast/mcr/ScoreResult;
+	public static final fun score (Ltop/skyeyefast/mcr/Hand;Ltop/skyeyefast/mcr/Tile;Ltop/skyeyefast/mcr/WinContext;)Ltop/skyeyefast/mcr/ScoreResult;
+	public static synthetic fun score$default (Ltop/skyeyefast/mcr/Hand;Ltop/skyeyefast/mcr/Tile;Ltop/skyeyefast/mcr/WinContext;ILjava/lang/Object;)Ltop/skyeyefast/mcr/ScoreResult;
+	public static final fun shanten (Ltop/skyeyefast/mcr/Hand;)I
+	public static final fun waitingTiles (Ltop/skyeyefast/mcr/Hand;)Ljava/util/Set;
+}
+
+public abstract class top/skyeyefast/mcr/Meld {
+}
+
+public final class top/skyeyefast/mcr/Meld$Chow : top/skyeyefast/mcr/Meld {
+	public fun <init> (Ltop/skyeyefast/mcr/Tile;)V
+	public fun <init> (Ltop/skyeyefast/mcr/Tile;Ltop/skyeyefast/mcr/ChowPosition;)V
+	public synthetic fun <init> (Ltop/skyeyefast/mcr/Tile;Ltop/skyeyefast/mcr/ChowPosition;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ltop/skyeyefast/mcr/Tile;
+	public final fun component2 ()Ltop/skyeyefast/mcr/ChowPosition;
+	public final fun copy (Ltop/skyeyefast/mcr/Tile;Ltop/skyeyefast/mcr/ChowPosition;)Ltop/skyeyefast/mcr/Meld$Chow;
+	public static synthetic fun copy$default (Ltop/skyeyefast/mcr/Meld$Chow;Ltop/skyeyefast/mcr/Tile;Ltop/skyeyefast/mcr/ChowPosition;ILjava/lang/Object;)Ltop/skyeyefast/mcr/Meld$Chow;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCalledPosition ()Ltop/skyeyefast/mcr/ChowPosition;
+	public final fun getMiddle ()Ltop/skyeyefast/mcr/Tile;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class top/skyeyefast/mcr/Meld$Kong : top/skyeyefast/mcr/Meld {
+	public fun <init> (Ltop/skyeyefast/mcr/Tile;)V
+	public fun <init> (Ltop/skyeyefast/mcr/Tile;Ltop/skyeyefast/mcr/RelativePlayer;)V
+	public fun <init> (Ltop/skyeyefast/mcr/Tile;Ltop/skyeyefast/mcr/RelativePlayer;Z)V
+	public synthetic fun <init> (Ltop/skyeyefast/mcr/Tile;Ltop/skyeyefast/mcr/RelativePlayer;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ltop/skyeyefast/mcr/Tile;
+	public final fun component2 ()Ltop/skyeyefast/mcr/RelativePlayer;
+	public final fun component3 ()Z
+	public final fun copy (Ltop/skyeyefast/mcr/Tile;Ltop/skyeyefast/mcr/RelativePlayer;Z)Ltop/skyeyefast/mcr/Meld$Kong;
+	public static synthetic fun copy$default (Ltop/skyeyefast/mcr/Meld$Kong;Ltop/skyeyefast/mcr/Tile;Ltop/skyeyefast/mcr/RelativePlayer;ZILjava/lang/Object;)Ltop/skyeyefast/mcr/Meld$Kong;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getFrom ()Ltop/skyeyefast/mcr/RelativePlayer;
+	public final fun getPromoted ()Z
+	public final fun getTile ()Ltop/skyeyefast/mcr/Tile;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class top/skyeyefast/mcr/Meld$Pung : top/skyeyefast/mcr/Meld {
+	public fun <init> (Ltop/skyeyefast/mcr/Tile;)V
+	public fun <init> (Ltop/skyeyefast/mcr/Tile;Ltop/skyeyefast/mcr/RelativePlayer;)V
+	public synthetic fun <init> (Ltop/skyeyefast/mcr/Tile;Ltop/skyeyefast/mcr/RelativePlayer;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ltop/skyeyefast/mcr/Tile;
+	public final fun component2 ()Ltop/skyeyefast/mcr/RelativePlayer;
+	public final fun copy (Ltop/skyeyefast/mcr/Tile;Ltop/skyeyefast/mcr/RelativePlayer;)Ltop/skyeyefast/mcr/Meld$Pung;
+	public static synthetic fun copy$default (Ltop/skyeyefast/mcr/Meld$Pung;Ltop/skyeyefast/mcr/Tile;Ltop/skyeyefast/mcr/RelativePlayer;ILjava/lang/Object;)Ltop/skyeyefast/mcr/Meld$Pung;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getFrom ()Ltop/skyeyefast/mcr/RelativePlayer;
+	public final fun getTile ()Ltop/skyeyefast/mcr/Tile;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class top/skyeyefast/mcr/RelativePlayer : java/lang/Enum {
+	public static final field LEFT Ltop/skyeyefast/mcr/RelativePlayer;
+	public static final field OPPOSITE Ltop/skyeyefast/mcr/RelativePlayer;
+	public static final field RIGHT Ltop/skyeyefast/mcr/RelativePlayer;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Ltop/skyeyefast/mcr/RelativePlayer;
+	public static fun values ()[Ltop/skyeyefast/mcr/RelativePlayer;
+}
+
+public abstract class top/skyeyefast/mcr/ScoreResult {
+}
+
+public final class top/skyeyefast/mcr/ScoreResult$NotWinning : top/skyeyefast/mcr/ScoreResult {
+	public static final field INSTANCE Ltop/skyeyefast/mcr/ScoreResult$NotWinning;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class top/skyeyefast/mcr/ScoreResult$Winning : top/skyeyefast/mcr/ScoreResult {
+	public synthetic fun <init> (Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun count (Ltop/skyeyefast/mcr/Fan;)I
+	public final fun getFans ()Ljava/util/List;
+	public final fun getMeetsMinimum ()Z
+	public final fun getNonFlowerFan ()I
+	public final fun getTotalFan ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class top/skyeyefast/mcr/Tile : java/lang/Enum {
+	public static final field Companion Ltop/skyeyefast/mcr/Tile$Companion;
+	public static final field EAST Ltop/skyeyefast/mcr/Tile;
+	public static final field GREEN Ltop/skyeyefast/mcr/Tile;
+	public static final field M1 Ltop/skyeyefast/mcr/Tile;
+	public static final field M2 Ltop/skyeyefast/mcr/Tile;
+	public static final field M3 Ltop/skyeyefast/mcr/Tile;
+	public static final field M4 Ltop/skyeyefast/mcr/Tile;
+	public static final field M5 Ltop/skyeyefast/mcr/Tile;
+	public static final field M6 Ltop/skyeyefast/mcr/Tile;
+	public static final field M7 Ltop/skyeyefast/mcr/Tile;
+	public static final field M8 Ltop/skyeyefast/mcr/Tile;
+	public static final field M9 Ltop/skyeyefast/mcr/Tile;
+	public static final field NORTH Ltop/skyeyefast/mcr/Tile;
+	public static final field P1 Ltop/skyeyefast/mcr/Tile;
+	public static final field P2 Ltop/skyeyefast/mcr/Tile;
+	public static final field P3 Ltop/skyeyefast/mcr/Tile;
+	public static final field P4 Ltop/skyeyefast/mcr/Tile;
+	public static final field P5 Ltop/skyeyefast/mcr/Tile;
+	public static final field P6 Ltop/skyeyefast/mcr/Tile;
+	public static final field P7 Ltop/skyeyefast/mcr/Tile;
+	public static final field P8 Ltop/skyeyefast/mcr/Tile;
+	public static final field P9 Ltop/skyeyefast/mcr/Tile;
+	public static final field RED Ltop/skyeyefast/mcr/Tile;
+	public static final field S1 Ltop/skyeyefast/mcr/Tile;
+	public static final field S2 Ltop/skyeyefast/mcr/Tile;
+	public static final field S3 Ltop/skyeyefast/mcr/Tile;
+	public static final field S4 Ltop/skyeyefast/mcr/Tile;
+	public static final field S5 Ltop/skyeyefast/mcr/Tile;
+	public static final field S6 Ltop/skyeyefast/mcr/Tile;
+	public static final field S7 Ltop/skyeyefast/mcr/Tile;
+	public static final field S8 Ltop/skyeyefast/mcr/Tile;
+	public static final field S9 Ltop/skyeyefast/mcr/Tile;
+	public static final field SOUTH Ltop/skyeyefast/mcr/Tile;
+	public static final field WEST Ltop/skyeyefast/mcr/Tile;
+	public static final field WHITE Ltop/skyeyefast/mcr/Tile;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public final fun getNotation ()Ljava/lang/String;
+	public final fun getRank ()Ljava/lang/Integer;
+	public final fun isHonor ()Z
+	public static final fun parse (Ljava/lang/String;)Ltop/skyeyefast/mcr/Tile;
+	public fun toString ()Ljava/lang/String;
+	public static fun valueOf (Ljava/lang/String;)Ltop/skyeyefast/mcr/Tile;
+	public static fun values ()[Ltop/skyeyefast/mcr/Tile;
+}
+
+public final class top/skyeyefast/mcr/Tile$Companion {
+	public final fun parse (Ljava/lang/String;)Ltop/skyeyefast/mcr/Tile;
+}
+
+public final class top/skyeyefast/mcr/Tiles {
+	public static final field INSTANCE Ltop/skyeyefast/mcr/Tiles;
+	public static final fun parse (Ljava/lang/String;)Ljava/util/List;
+}
+
+public final class top/skyeyefast/mcr/WinContext {
+	public fun <init> ()V
+	public fun <init> (Ltop/skyeyefast/mcr/WinMethod;)V
+	public fun <init> (Ltop/skyeyefast/mcr/WinMethod;Ltop/skyeyefast/mcr/Wind;)V
+	public fun <init> (Ltop/skyeyefast/mcr/WinMethod;Ltop/skyeyefast/mcr/Wind;Ltop/skyeyefast/mcr/Wind;)V
+	public fun <init> (Ltop/skyeyefast/mcr/WinMethod;Ltop/skyeyefast/mcr/Wind;Ltop/skyeyefast/mcr/Wind;I)V
+	public fun <init> (Ltop/skyeyefast/mcr/WinMethod;Ltop/skyeyefast/mcr/Wind;Ltop/skyeyefast/mcr/Wind;IZ)V
+	public fun <init> (Ltop/skyeyefast/mcr/WinMethod;Ltop/skyeyefast/mcr/Wind;Ltop/skyeyefast/mcr/Wind;IZZ)V
+	public fun <init> (Ltop/skyeyefast/mcr/WinMethod;Ltop/skyeyefast/mcr/Wind;Ltop/skyeyefast/mcr/Wind;IZZZ)V
+	public synthetic fun <init> (Ltop/skyeyefast/mcr/WinMethod;Ltop/skyeyefast/mcr/Wind;Ltop/skyeyefast/mcr/Wind;IZZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ltop/skyeyefast/mcr/WinMethod;
+	public final fun component2 ()Ltop/skyeyefast/mcr/Wind;
+	public final fun component3 ()Ltop/skyeyefast/mcr/Wind;
+	public final fun component4 ()I
+	public final fun component5 ()Z
+	public final fun component6 ()Z
+	public final fun component7 ()Z
+	public final fun copy (Ltop/skyeyefast/mcr/WinMethod;Ltop/skyeyefast/mcr/Wind;Ltop/skyeyefast/mcr/Wind;IZZZ)Ltop/skyeyefast/mcr/WinContext;
+	public static synthetic fun copy$default (Ltop/skyeyefast/mcr/WinContext;Ltop/skyeyefast/mcr/WinMethod;Ltop/skyeyefast/mcr/Wind;Ltop/skyeyefast/mcr/Wind;IZZZILjava/lang/Object;)Ltop/skyeyefast/mcr/WinContext;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getFlowerCount ()I
+	public final fun getKongInvolved ()Z
+	public final fun getLastTile ()Z
+	public final fun getMethod ()Ltop/skyeyefast/mcr/WinMethod;
+	public final fun getPrevalentWind ()Ltop/skyeyefast/mcr/Wind;
+	public final fun getSeatWind ()Ltop/skyeyefast/mcr/Wind;
+	public final fun getWallLast ()Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class top/skyeyefast/mcr/WinMethod : java/lang/Enum {
+	public static final field DISCARD Ltop/skyeyefast/mcr/WinMethod;
+	public static final field SELF_DRAW Ltop/skyeyefast/mcr/WinMethod;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Ltop/skyeyefast/mcr/WinMethod;
+	public static fun values ()[Ltop/skyeyefast/mcr/WinMethod;
+}
+
+public final class top/skyeyefast/mcr/Wind : java/lang/Enum {
+	public static final field EAST Ltop/skyeyefast/mcr/Wind;
+	public static final field NORTH Ltop/skyeyefast/mcr/Wind;
+	public static final field SOUTH Ltop/skyeyefast/mcr/Wind;
+	public static final field WEST Ltop/skyeyefast/mcr/Wind;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Ltop/skyeyefast/mcr/Wind;
+	public static fun values ()[Ltop/skyeyefast/mcr/Wind;
+}
+
