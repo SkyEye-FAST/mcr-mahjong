@@ -3,6 +3,7 @@ package example
 import top.skyeyefast.mcr.*
 
 fun main() {
+    check(McrMahjong.SCORING_PROFILE == "wmo-2014-zh")
     val hand = Hand(Tiles.parse("258m1477s369p"), listOf(Meld.Chow(Tile.M4, ChowPosition.HIGH)))
     check(McrMahjong.shanten(hand) == 0)
     check(Tile.S7 in McrMahjong.waitingTiles(hand))

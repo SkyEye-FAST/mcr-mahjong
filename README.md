@@ -2,11 +2,12 @@
 
 A standalone **Kotlin/JVM 17** library for Mahjong Competition Rules (国标麻将).
 
-**Unreleased candidate:** public scoring explicitly targets the revised WMO English
-reference described in [COMPATIBILITY.md](COMPATIBILITY.md), not the upstream's
-house-rule defaults or every rule set called “国标”. Its 81-fan public API and
-the 82-entry C++ compatibility baseline are separate. Formal publication remains
-on hold until this rules profile and its documented combinations are accepted.
+**Unreleased candidate:** public scoring targets the WMO Chinese *麻将竞赛规则*,
+first edition/first printing, December 2014, described with its official source and
+SHA-256 in [COMPATIBILITY.md](COMPATIBILITY.md). This is not the upstream's
+house-rule default or every rule set called “国标”. Its 81-fan public API and the
+82-entry C++ compatibility baseline are separate. Formal publication remains on
+hold because the Chinese text does not settle every Combination Dragon wait overlap.
 The only direct library dependency is Kotlin's standard library, which brings
 JetBrains annotations transitively. There are no Minecraft, mod-loader,
 native-library, JNI or Python dependencies.
@@ -26,9 +27,13 @@ All 81 public fans are represented. The upstream-only five-point mixed-kong entr
 is internal: the public scorer applies the rulebook's six-point combination and
 eight-point Two Concealed Kongs. Corrections are applied before choosing the best
 decomposition; they are not a rescaling of an already-selected upstream result.
+For Three/Four Kongs, concealed-kong and concealed-pung combinations follow their
+separate Chinese clauses; the exact adjustments and source pages are listed in
+[COMPATIBILITY.md](COMPATIBILITY.md).
 
-`McrMahjong.SCORING_PROFILE` identifies this fixed contract as `wmo-2013-en`,
-named after the inspected document's 2013 postscript, not its PDF creation date.
+`McrMahjong.SCORING_PROFILE` identifies this contract as `wmo-2014-zh`, based on
+the Chinese edition's printed publication record, not its PDF filename or 2013
+postscript.
 For the mixed-kong exception, the result has one entry under the rulebook's
 `TWO_MELDED_KONGS` category with `FanCount.isMixedKongPair == true` and
 `FanCount.points == 6`. It does not also award the individual kongs. Display that

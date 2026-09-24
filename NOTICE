@@ -1,5 +1,5 @@
 This project is a Kotlin/JVM port of mahjong-algorithm by Jeff Wang.
-Public scoring uses the separate wmo-2013-en adapter documented in COMPATIBILITY.md.
+Public scoring uses the wmo-2014-zh adapter documented in COMPATIBILITY.md.
 The switches below describe the internal compatibility engine, not a claim that
 the upstream defaults define standard MCR. No rules-body endorsement is implied.
 Upstream: https://github.com/summerinsects/mahjong-algorithm

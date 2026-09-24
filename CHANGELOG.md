@@ -2,11 +2,14 @@
 
 ## 0.1.0 (unreleased; rules review pending)
 
-Separate the public revised-WMO-English profile (2013 postscript) from the pinned upstream compatibility
+Pin public scoring to the WMO Chinese *麻将竞赛规则*, first edition/first printing,
+December 2014 (`wmo-2014-zh`), separately from the pinned upstream compatibility
 engine. Remove the five-point mixed-kong public enum entry and the public initial-hand
 flag before release. Apply the sourced mixed-kong, concealed-kong, self-draw and
-fan-combination adjustments to each candidate before maximum-score selection.
-The complete upstream oracle vocabulary and its frozen regression tables are retained.
+fan-combination adjustments to each candidate before maximum-score selection. Add
+the missing Four Kongs concealed-kong corrections; the complete upstream oracle
+vocabulary and frozen regression tables remain unchanged. Combination Dragon wait
+overlap remains an explicit rules-review blocker.
 The fixed scoring profile is exposed as `McrMahjong.SCORING_PROFILE`. Mixed kongs
 use the standard rulebook entry with a validated `FanCount.isMixedKongPair` marker
 and an explicit six-point subtotal, not an extra fan or fictitious extra kong.
