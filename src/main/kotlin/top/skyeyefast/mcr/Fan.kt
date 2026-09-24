@@ -31,19 +31,23 @@ enum class Fan(val points: Int, val chineseName: String) {
     EDGE_WAIT(1, "边张"), CLOSED_WAIT(1, "嵌张"), SINGLE_WAIT(1, "单钓"), SELF_DRAWN(1, "自摸"),
     FLOWER_TILES(1, "花牌"), CONCEALED_KONG_AND_MELDED_KONG(5, "明暗杠");
 
+    @get:JvmSynthetic
     internal val index: Int get() = ordinal + 1
 }
 
+/** A positive number of occurrences of a fan, with overflow-checked point multiplication. */
 data class FanCount(val fan: Fan, val count: Int) {
-    init { require(count > 0) }
+    init { require(count in 1..Int.MAX_VALUE / fan.points) { "Fan count must be positive and its points must fit in Int" } }
     val points: Int get() = fan.points * count
 }
 
 /** Invalid inputs throw IllegalArgumentException; a valid non-winning shape returns [NotWinning]. */
 sealed class ScoreResult {
+    /** Valid physical input that does not form a winning shape. */
     data object NotWinning : ScoreResult()
 
-    class Winning internal constructor(fans: List<FanCount>) : ScoreResult() {
+    /** A structural win; use [meetsMinimum] separately to check non-flower qualification. */
+    class Winning private constructor(fans: List<FanCount>) : ScoreResult() {
         val fans: List<FanCount> = immutableList(fans)
         val totalFan: Int = this.fans.sumOf { it.points }
         val nonFlowerFan: Int = totalFan - this.fans.filter { it.fan == Fan.FLOWER_TILES }.sumOf { it.points }
@@ -51,5 +55,10 @@ sealed class ScoreResult {
         val meetsMinimum: Boolean get() = nonFlowerFan >= 8
         fun count(fan: Fan): Int = fans.firstOrNull { it.fan == fan }?.count ?: 0
         override fun toString(): String = "Winning(totalFan=$totalFan, fans=$fans)"
+
+        internal companion object {
+            @JvmSynthetic
+            fun create(fans: List<FanCount>): Winning = Winning(fans)
+        }
     }
 }

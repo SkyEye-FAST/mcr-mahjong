@@ -1,7 +1,7 @@
 package top.skyeyefast.mcr
 
 /** The 34 non-flower tile types. M = characters, S = bamboo, P = dots. */
-enum class Tile(internal val code: Int, val notation: String) {
+enum class Tile(@get:JvmSynthetic internal val code: Int, val notation: String) {
     M1(0x11, "1m"), M2(0x12, "2m"), M3(0x13, "3m"), M4(0x14, "4m"), M5(0x15, "5m"),
     M6(0x16, "6m"), M7(0x17, "7m"), M8(0x18, "8m"), M9(0x19, "9m"),
     S1(0x21, "1s"), S2(0x22, "2s"), S3(0x23, "3s"), S4(0x24, "4s"), S5(0x25, "5s"),
@@ -11,6 +11,7 @@ enum class Tile(internal val code: Int, val notation: String) {
     EAST(0x41, "E"), SOUTH(0x42, "S"), WEST(0x43, "W"), NORTH(0x44, "N"),
     RED(0x45, "C"), GREEN(0x46, "F"), WHITE(0x47, "P");
 
+    /** Whether this is a wind or dragon. */
     val isHonor: Boolean get() = code >= 0x41
     /** 1..9 for numbered tiles, null for honors. */
     val rank: Int? get() = if (isHonor) null else code and 15
@@ -19,8 +20,10 @@ enum class Tile(internal val code: Int, val notation: String) {
 
     companion object {
         private val byCode: Map<Int, Tile> = entries.associateBy { it.code }
+        @JvmSynthetic
         internal fun fromCode(code: Int): Tile = requireNotNull(byCode[code]) { "Invalid tile code: $code" }
 
+        /** Parses exactly one tile; otherwise throws [IllegalArgumentException]. */
         @JvmStatic
         fun parse(notation: String): Tile = Tiles.parse(notation).singleOrNull()
             ?: throw IllegalArgumentException("Expected one tile: $notation")
@@ -29,6 +32,7 @@ enum class Tile(internal val code: Int, val notation: String) {
 
 /** Small, strict notation helper: 123m456s789pESWNCFP; whitespace is ignored. */
 object Tiles {
+    /** Parses tile kinds without validating hand size or copy counts; returns an immutable list. */
     @JvmStatic
     fun parse(notation: String): List<Tile> {
         val result = ArrayList<Tile>()

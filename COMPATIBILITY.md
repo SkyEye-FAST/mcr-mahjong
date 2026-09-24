@@ -36,6 +36,18 @@ are disabled. The two variants of pure shifted chows remain one fan.
 
 Invalid hands throw `IllegalArgumentException` before calculation rather than
 exposing C++ error codes, invalid memory access or undefined output buffers.
+Null elements in Java-supplied collections are rejected with `IllegalArgumentException`;
+null passed for a non-null parameter uses Kotlin's standard `NullPointerException`.
+Input value objects validate both construction and Kotlin `copy` calls. `FanCount`
+also rejects multiplication overflow. Aggregate result constructors are private:
+obtain results through `McrMahjong` in both Kotlin and Java. Internal packing and
+array helpers are hidden from Java source with `@JvmSynthetic`.
+
+All returned collections are immutable snapshots. Hand equality includes tile
+and meld order, rather than testing structural equivalence. Evaluation retains no
+caller-owned mutable collections or shared evaluation state; callers must not
+modify a mutable input collection concurrently while a call is taking its snapshot.
+
 Unavailable special forms are omitted from `HandAnalysis.forms`; the native
 adapter represents them as `INT_MAX` with an empty useful table without invoking
 upstream on an unsupported count. In particular, upstream's honors-and-knitted

@@ -8,6 +8,7 @@ import top.skyeyefast.mcr.internal.TABLE_SIZE
 enum class HandForm {
     REGULAR, SEVEN_PAIRS, THIRTEEN_ORPHANS, HONORS_AND_KNITTED_TILES, KNITTED_STRAIGHT;
 
+    @JvmSynthetic
     internal fun calculate(tiles: IntArray, useful: BooleanArray?): Int = when (this) {
         REGULAR -> Shanten.regular(tiles, useful)
         SEVEN_PAIRS -> Shanten.sevenPairs(tiles, useful)
@@ -25,19 +26,31 @@ data class EffectiveTile(val tile: Tile, val remainingCopies: Int) {
     init { require(remainingCopies in 0..4) }
 }
 
-class FormAnalysis internal constructor(val form: HandForm, val shanten: Int, effectiveTiles: List<EffectiveTile>) {
+/** One applicable structural form and its effective tiles; shanten 0 means ready. */
+class FormAnalysis private constructor(val form: HandForm, val shanten: Int, effectiveTiles: List<EffectiveTile>) {
     val effectiveTiles: List<EffectiveTile> = immutableList(effectiveTiles)
     val remainingCount: Int get() = effectiveTiles.sumOf { it.remainingCopies }
+
+    internal companion object {
+        @JvmSynthetic
+        fun create(form: HandForm, shanten: Int, effectiveTiles: List<EffectiveTile>): FormAnalysis =
+            FormAnalysis(form, shanten, effectiveTiles)
+    }
 }
 
 /** Only applicable forms are present; unavailable special forms are not given fake distances. */
-class HandAnalysis internal constructor(forms: List<FormAnalysis>) {
+class HandAnalysis private constructor(forms: List<FormAnalysis>) {
     val forms: List<FormAnalysis> = immutableList(forms)
     val shanten: Int = this.forms.minOf { it.shanten }
     val effectiveTiles: List<EffectiveTile> = immutableList(
         this.forms.filter { it.shanten == shanten }.flatMap { it.effectiveTiles }.distinctBy { it.tile }.sortedBy { it.tile.ordinal },
     )
     val remainingCount: Int get() = effectiveTiles.sumOf { it.remainingCopies }
+
+    internal companion object {
+        @JvmSynthetic
+        fun create(forms: List<FormAnalysis>): HandAnalysis = HandAnalysis(forms)
+    }
 }
 
 /**
@@ -46,16 +59,25 @@ class HandAnalysis internal constructor(forms: List<FormAnalysis>) {
  * [completesForms] identifies upstream's -1 correction: adding the discarded tile
  * back completes those forms. This distinguishes winning now from shanten after discarding.
  */
-class DiscardAnalysis internal constructor(
+class DiscardAnalysis private constructor(
     val discard: Tile, val analysis: HandAnalysis, completesForms: Set<HandForm>,
 ) {
     val completesForms: Set<HandForm> = immutableSet(completesForms)
     val shanten: Int get() = analysis.shanten
     val effectiveTiles: List<EffectiveTile> get() = analysis.effectiveTiles
     val remainingCount: Int get() = analysis.remainingCount
+
+    internal companion object {
+        @JvmSynthetic
+        fun create(discard: Tile, analysis: HandAnalysis, completesForms: Set<HandForm>): DiscardAnalysis =
+            DiscardAnalysis(discard, analysis, completesForms)
+    }
 }
 
-/** Stateless, thread-safe entry points. All public input/output collections are copied. */
+/**
+ * Stateless, thread-safe entry points. Returned collections and retained inputs are immutable snapshots.
+ * Callers must not mutate a supplied collection concurrently with the call reading it.
+ */
 object McrMahjong {
     /**
      * Calculates structural shanten and effective tiles for a hand before drawing.
@@ -101,7 +123,7 @@ object McrMahjong {
             val completes = analysis.forms.filter { form ->
                 form.shanten == 0 && form.effectiveTiles.any { it.tile == discarded }
             }.mapTo(linkedSetOf()) { it.form }
-            DiscardAnalysis(discarded, analysis, completes)
+            DiscardAnalysis.create(discarded, analysis, completes)
         })
     }
 
@@ -116,14 +138,14 @@ object McrMahjong {
         )
         if (score.total == -3) return ScoreResult.NotWinning
         check(score.total >= 0) { "Unexpected internal calculator result: ${score.total}" }
-        return ScoreResult.Winning(Fan.entries.filter { score.table[it.index] > 0 }.map {
+        return ScoreResult.Winning.create(Fan.entries.filter { score.table[it.index] > 0 }.map {
             FanCount(it, score.table[it.index])
         })
     }
 
     private fun knownCounts(hand: Hand, extra: List<Tile>): IntArray {
         val counts = hand.physicalCounts()
-        for (tile in extra) require(++counts[tile.code] <= 4) { "Known tiles contain more than four copies of $tile" }
+        for (tile in immutableList(extra)) require(++counts[tile.code] <= 4) { "Known tiles contain more than four copies of $tile" }
         return counts
     }
 
@@ -133,10 +155,10 @@ object McrMahjong {
             val useful = BooleanArray(TABLE_SIZE)
             val shanten = form.calculate(tiles, useful)
             if (shanten == Int.MAX_VALUE) continue
-            forms.add(FormAnalysis(form, shanten, Tile.entries.filter { useful[it.code] }.map {
+            forms.add(FormAnalysis.create(form, shanten, Tile.entries.filter { useful[it.code] }.map {
                 EffectiveTile(it, 4 - counts[it.code])
             }))
         }
-        return HandAnalysis(forms)
+        return HandAnalysis.create(forms)
     }
 }

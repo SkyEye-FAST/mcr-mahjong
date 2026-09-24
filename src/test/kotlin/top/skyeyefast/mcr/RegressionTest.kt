@@ -57,6 +57,10 @@ class RegressionTest {
         assertFailsWith<IllegalArgumentException> { Meld.Chow(Tile.M1) }
         assertFailsWith<IllegalArgumentException> { Meld.Kong(Tile.M1, promoted = true) }
         assertFailsWith<IllegalArgumentException> { WinContext(flowerCount = 9) }
+        assertFailsWith<IllegalArgumentException> { WinContext().copy(flowerCount = -1) }
+        assertFailsWith<IllegalArgumentException> { Meld.Chow(Tile.M4).copy(middle = Tile.M9) }
+        assertFailsWith<IllegalArgumentException> { Meld.Kong(Tile.M1).copy(promoted = true) }
+        assertFailsWith<IllegalArgumentException> { FanCount(Fan.BIG_FOUR_WINDS, 1).copy(count = Int.MAX_VALUE) }
         assertFailsWith<IllegalArgumentException> { Tiles.parse("123") }
         assertFailsWith<IllegalArgumentException> { Tiles.parse("0m") }
         assertFailsWith<IllegalArgumentException> { Tile.parse("12m") }
@@ -101,11 +105,13 @@ class RegressionTest {
 
     @Test
     fun noSharedMutableEvaluationState() {
-        val requests = fixtures("fan-regression.tsv").take(8)
+        val requests = (fixtures("fan-regression.tsv").take(8) + fixtures("fan-regression.tsv").takeLast(5))
+            .map { it.first } + fixtures("analysis-regression.tsv").takeLast(5).map { it.first }
+        val expected = requests.associateWith { ReferenceProtocol.calculate(it) }
         val executor = java.util.concurrent.Executors.newFixedThreadPool(4)
         try {
-            val jobs = (1..3).flatMap { requests }.map { (request, expected) ->
-                executor.submit<Boolean> { expected == ReferenceProtocol.compactScore(ReferenceProtocol.calculate(request)) }
+            val jobs = (1..3).flatMap { requests }.map { request ->
+                executor.submit<Boolean> { expected.getValue(request) == ReferenceProtocol.calculate(request) }
             }
             assertTrue(jobs.all { it.get(5, java.util.concurrent.TimeUnit.SECONDS) })
         } finally {
