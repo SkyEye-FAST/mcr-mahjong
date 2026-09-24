@@ -174,12 +174,11 @@ Dokka HTML API reference, not just Markdown; the `sources` artifact contains the
 actual Kotlin sources. Both include MIT attribution. No native oracle, reference
 checkout, consumer code or documentation generator is a library runtime dependency.
 
-The `0.1.0` coordinate remains a local, unpublished release candidate. The POM
-records `wmo-2014-zh` and `mcr.rules.review.status=complete`; it does not encode a
-temporary publication state. Normal CI runs build (including ABI and publication-file
-checks), Maven Local publication, then the independent Java/POM and Kotlin/Gradle-
-metadata consumers. Native C++ differential testing remains explicit opt-in, not a
-normal CI prerequisite.
+The `0.1.0` POM records `wmo-2014-zh` and `mcr.rules.review.status=complete`; it does
+not encode a temporary publication state. Normal CI runs build (including ABI and
+publication-file checks), Maven Local publication, then the independent Java/POM and
+Kotlin/Gradle-metadata consumers. Native C++ differential testing remains explicit
+opt-in, not a normal CI prerequisite.
 
 ### Rules review status
 
@@ -190,6 +189,5 @@ remains the sole rules authority; the pinned C++ oracle and event supplements do
 establish public semantics. No standalone WMO corrigendum was linked from the official
 rules index or found in the official notices reviewed as of 2026-09-24.
 
-The rules review is complete for the audited 2014 profile. The remaining release work
-is remote CI and the signed release process; no rule question is currently recorded
-as a release blocker.
+The rules review is complete for the audited 2014 profile. No rule question is
+currently recorded as unresolved within this audited profile.

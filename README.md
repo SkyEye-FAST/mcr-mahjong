@@ -2,15 +2,14 @@
 
 A standalone **Kotlin/JVM 17** library for Mahjong Competition Rules (国标麻将).
 
-**Unreleased candidate:** public scoring targets the WMO Chinese *麻将竞赛规则*,
+Public scoring targets the WMO Chinese *麻将竞赛规则*,
 first edition/first printing, December 2014, described with its official source and
 SHA-256 in [COMPATIBILITY.md](COMPATIBILITY.md). This is not the upstream's
 house-rule default or every rule set called “国标”. Its 81-fan public API and the
-82-entry C++ compatibility baseline are separate. This remains a local, unreleased
-`0.1.0` candidate. Audited rule interpretations and their Chinese page references
-are recorded in [COMPATIBILITY.md](COMPATIBILITY.md), including Combination Dragon
-residual waits. The rules review for this profile is complete; the release still
-awaits remote CI and a signed version tag.
+82-entry C++ compatibility baseline are separate. The WMO rule review for this
+profile is complete. Audited interpretations and their Chinese page references are
+recorded in [COMPATIBILITY.md](COMPATIBILITY.md), including Combination Dragon
+residual waits. The `0.1.0` Maven artifact has not been uploaded to Maven Central.
 The only direct library dependency is Kotlin's standard library, which brings
 JetBrains annotations transitively. There are no Minecraft, mod-loader,
 native-library, JNI or Python dependencies.
@@ -64,7 +63,7 @@ On Windows use `gradlew.bat`. The artifact coordinates are:
 
 ```kotlin
 repositories {
-    mavenLocal() // unpublished candidate; local verification only
+    mavenLocal() // local verification before Maven Central publication
     mavenCentral()
 }
 dependencies {
@@ -97,8 +96,8 @@ variables: `CENTRAL_PORTAL_USERNAME`, `CENTRAL_PORTAL_PASSWORD`,
 `MAVEN_CENTRAL_SIGNING_PASSWORD`. Use a primary key accepted by Central and,
 before upload, publish its public part to a [key server supported by
 Sonatype](https://central.sonatype.org/publish/requirements/gpg/).
-No publishing credentials or key material are stored in this repository. This
-`0.1.0` candidate has not been uploaded to Maven Central.
+No publishing credentials or key material are stored in this repository. The
+`0.1.0` Maven artifact has not been uploaded to Maven Central.
 
 ## Kotlin
 
@@ -219,7 +218,7 @@ Native differential testing is explicitly opt-in, uses a fixed random seed and
 compares complete outputs rather than just totals. See [tools/README.md](tools/README.md).
 Neither the upstream C++ checkout nor compiled oracle is shipped in the library.
 
-To verify the unpublished candidate and both independent consumers:
+To verify the `0.1.0` artifact locally and both independent consumers:
 
 ```shell
 ./gradlew publishToMavenLocal

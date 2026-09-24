@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.0 (unreleased)
+## 0.1.0 — 2026-09-24
 
 Pins public scoring to the WMO Chinese *麻将竞赛规则*, first edition/first printing,
 December 2014 (`wmo-2014-zh`), separately from the pinned upstream compatibility
@@ -19,8 +19,9 @@ and an explicit six-point subtotal, not an extra fan or fictitious extra kong.
 
 Adds generated Kotlin/JVM ABI checks, publication-content verification and Maven
 Local plus both consumer verifications to normal CI. Native C++ differential tests
-remain opt-in. The candidate has no version tag and has not been published to Maven
-Central; remote CI and the signed release steps remain to be completed.
+remain opt-in and were run explicitly during release verification. Maven Central
+deployment is not included because Portal credentials and the artifact-signing key
+were not configured.
 
 Initial standalone Kotlin/JVM 17 candidate based on the pinned MIT-licensed
 mahjong-algorithm shanten and fan calculator. Provides typed tile/meld/hand and
