@@ -42,16 +42,26 @@ tasks.register<Test>("differentialTest") {
     testClassesDirs = sourceSets.test.get().output.classesDirs
     classpath = sourceSets.test.get().runtimeClasspath
     useJUnitPlatform { includeTags("differential") }
-    val oracle = providers.gradleProperty("oraclePath")
+    systemProperty("mcr.oracle", providers.gradleProperty("oraclePath").getOrElse(""))
     doFirst {
-        require(oracle.isPresent) { "Supply -PoraclePath=/absolute/path/to/oracle (see tools/README.md)" }
-        systemProperty("mcr.oracle", oracle.get())
+        val oracle = (this as Test).systemProperties["mcr.oracle"].toString()
+        require(oracle.isNotBlank() && File(oracle).isFile) {
+            "Supply -PoraclePath=/absolute/path/to/oracle (see tools/README.md)"
+        }
     }
     outputs.upToDateWhen { false }
 }
 
 tasks.withType<Jar>().configureEach {
     from(listOf("LICENSE", "NOTICE")) { into("META-INF") }
+    isPreserveFileTimestamps = false
+    isReproducibleFileOrder = true
+}
+
+// Kotlin KDoc remains in the sources JAR; ship the contract and usage guide in
+// the documentation artifact without adding a documentation toolchain dependency.
+tasks.named<Jar>("javadocJar") {
+    from("README.md", "COMPATIBILITY.md")
 }
 
 publishing {
@@ -61,6 +71,12 @@ publishing {
             pom {
                 name = "MCR Mahjong"
                 description = "Pure Kotlin/JVM Mahjong Competition Rules shanten and fan calculation."
+                developers {
+                    developer {
+                        id = "SkyEye-FAST"
+                        name = "SkyEye_FAST"
+                    }
+                }
                 licenses {
                     license {
                         name = "MIT License"
