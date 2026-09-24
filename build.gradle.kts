@@ -10,6 +10,7 @@ plugins {
     id("org.jetbrains.dokka") version "2.2.0"
     `java-library`
     `maven-publish`
+    signing
 }
 
 group = "top.skyeyefast"
@@ -112,6 +113,8 @@ tasks.register("verifyPublication") {
     val pom = layout.buildDirectory.file("publications/maven/pom-default.xml")
     val metadata = layout.buildDirectory.file("publications/maven/module.json")
     val expectedVersion = project.version.toString()
+    val centralPortalTaskConfigured = tasks.names.contains("publishAggregationToCentralPortal")
+    val signingTaskConfigured = tasks.names.contains("signMavenPublication")
     inputs.files(archives, pom, metadata)
     inputs.property("artifactVersion", expectedVersion)
     dependsOn(archives, "generatePomFileForMavenPublication", "generateMetadataFileForMavenPublication")
@@ -152,11 +155,19 @@ tasks.register("verifyPublication") {
         check(value("/project/groupId") == "top.skyeyefast")
         check(value("/project/artifactId") == "mcr-mahjong")
         check(value("/project/version") == expectedVersion)
+        check(value("/project/url") == "https://github.com/SkyEye-FAST/mcr-mahjong")
+        check(value("/project/scm/connection") == "scm:git:https://github.com/SkyEye-FAST/mcr-mahjong.git")
+        check(value("/project/scm/developerConnection") == "scm:git:ssh://git@github.com/SkyEye-FAST/mcr-mahjong.git")
+        check(value("/project/scm/url") == "https://github.com/SkyEye-FAST/mcr-mahjong")
         check(value("/project/licenses/license/name") == "MIT License")
         check(value("/project/properties/mcr.scoring.profile") == "wmo-2014-zh")
+        check(value("/project/properties/mcr.rules.review.status") == "complete")
+        check(xpath.evaluate("count(/project/properties/mcr.release.status)", doc) == "0")
         check(value("/project/dependencies/dependency/artifactId") == "kotlin-stdlib")
         check(value("/project/dependencies/dependency/scope") == "compile")
         check(xpath.evaluate("count(/project/dependencies/dependency)", doc) == "1")
+        check(centralPortalTaskConfigured) { "Central Portal publication task is not configured" }
+        check(signingTaskConfigured) { "Maven publication signing task is not configured" }
         val module = JsonSlurper().parse(metadata.get().asFile) as Map<*, *>
         check((module["component"] as Map<*, *>)["version"] == expectedVersion)
         val variants = (module["variants"] as List<*>).map { it as Map<*, *> }
@@ -172,6 +183,36 @@ tasks.register("verifyPublication") {
 
 tasks.check { dependsOn("verifyPublication") }
 
+val centralSigningKey = providers.gradleProperty("signingKey")
+    .orElse(providers.environmentVariable("MAVEN_CENTRAL_SIGNING_KEY"))
+val centralSigningPassword = providers.gradleProperty("signingPassword")
+    .orElse(providers.environmentVariable("MAVEN_CENTRAL_SIGNING_PASSWORD"))
+val centralPortalUsername = providers.gradleProperty("centralPortalUsername")
+    .orElse(providers.environmentVariable("CENTRAL_PORTAL_USERNAME"))
+val centralPortalPassword = providers.gradleProperty("centralPortalPassword")
+    .orElse(providers.environmentVariable("CENTRAL_PORTAL_PASSWORD"))
+
+tasks.register("verifyCentralPublishingCredentials") {
+    group = "verification"
+    description = "Require Central Portal tokens and protected OpenPGP signing credentials before upload."
+    val credentialsConfigured = listOf(
+        centralPortalUsername.map { it.isNotBlank() }.getOrElse(false),
+        centralPortalPassword.map { it.isNotBlank() }.getOrElse(false),
+        centralSigningKey.map { it.isNotBlank() }.getOrElse(false),
+        centralSigningPassword.map { it.isNotBlank() }.getOrElse(false),
+    )
+    doLast {
+        check(credentialsConfigured[0]) { "Set CENTRAL_PORTAL_USERNAME or centralPortalUsername" }
+        check(credentialsConfigured[1]) { "Set CENTRAL_PORTAL_PASSWORD or centralPortalPassword" }
+        check(credentialsConfigured[2]) { "Set MAVEN_CENTRAL_SIGNING_KEY or signingKey" }
+        check(credentialsConfigured[3]) { "Set MAVEN_CENTRAL_SIGNING_PASSWORD or signingPassword" }
+    }
+}
+
+tasks.named("nmcpPublishAggregationToCentralPortal") {
+    dependsOn("verifyCentralPublishingCredentials")
+}
+
 publishing {
     publications {
         create<MavenPublication>("maven") {
@@ -179,10 +220,16 @@ publishing {
             pom {
                 name = "MCR Mahjong"
                 description = "Pure Kotlin/JVM Mahjong Competition Rules shanten and fan calculation."
+                url = "https://github.com/SkyEye-FAST/mcr-mahjong"
                 inceptionYear = "2026"
                 properties.put("mcr.upstream.commit", "44a178af08bf11f82a8993fddbe2fe8876ddd8f3")
                 properties.put("mcr.scoring.profile", "wmo-2014-zh")
-                properties.put("mcr.release.status", "rules-review-pending")
+                properties.put("mcr.rules.review.status", "complete")
+                scm {
+                    connection = "scm:git:https://github.com/SkyEye-FAST/mcr-mahjong.git"
+                    developerConnection = "scm:git:ssh://git@github.com/SkyEye-FAST/mcr-mahjong.git"
+                    url = "https://github.com/SkyEye-FAST/mcr-mahjong"
+                }
                 developers {
                     developer {
                         id = "SkyEye-FAST"
@@ -201,4 +248,12 @@ publishing {
             }
         }
     }
+}
+
+signing {
+    centralSigningKey.orNull?.takeIf(String::isNotBlank)?.let { key ->
+        useInMemoryPgpKeys(key, centralSigningPassword.orNull)
+    }
+    setRequired { gradle.taskGraph.hasTask("publishAggregationToCentralPortal") }
+    sign(publishing.publications["maven"])
 }
