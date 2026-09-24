@@ -41,7 +41,8 @@ null passed for a non-null parameter uses Kotlin's standard `NullPointerExceptio
 Input value objects validate both construction and Kotlin `copy` calls. `FanCount`
 also rejects multiplication overflow. Aggregate result constructors are private:
 obtain results through `McrMahjong` in both Kotlin and Java. Internal packing and
-array helpers are hidden from Java source with `@JvmSynthetic`.
+array helpers on public types are hidden from Java source with `@JvmSynthetic`;
+the entire `internal` package remains outside the supported API.
 
 All returned collections are immutable snapshots. Hand equality includes tile
 and meld order, rather than testing structural equivalence. Evaluation retains no
@@ -73,6 +74,17 @@ transitive dependency. JUnit and the optional C++ process are test-only.
 The C++ oracle communicates over standard input/output; no native code is loaded
 into the JVM or bundled in Maven artifacts.
 
-The initial artifact is `top.skyeyefast:mcr-mahjong:0.1.0-SNAPSHOT`. Public API
+The initial artifact is `top.skyeyefast:mcr-mahjong:0.1.0`. Public API
 changes must be explicit and accompanied by updated consumer tests. There is no
 promise that internal Kotlin/JVM-mangled members are stable API.
+
+The standard library is published in Maven `compile` scope because Kotlin-generated
+public members expose its types to Java callers. The `javadoc` artifact contains
+Dokka HTML API reference, not just Markdown; the `sources` artifact contains the
+actual Kotlin sources. Both include MIT attribution. No native oracle, reference
+checkout, consumer code or documentation generator is a library runtime dependency.
+
+This release is prepared for Maven Local and ordinary Maven repository consumption.
+No remote repository has been configured or published. Before public hosting, add
+the real project/SCM URLs and the destination's artifact-signing requirements;
+those are not prerequisites for locally consuming `0.1.0`.

@@ -32,6 +32,10 @@ Use JDK 17 or later:
 ./gradlew publishToMavenLocal
 ```
 
+The artifact is compiled with Kotlin 2.3.20. Kotlin consumers need a compiler
+compatible with Kotlin 2.3 metadata (the consumer checks use 2.3.20). Java
+consumers need no Kotlin build plugin.
+
 On Windows use `gradlew.bat`. The artifact coordinates are:
 
 ```kotlin
@@ -40,15 +44,23 @@ repositories {
     mavenCentral()
 }
 dependencies {
-    implementation("top.skyeyefast:mcr-mahjong:0.1.0-SNAPSHOT")
+    implementation("top.skyeyefast:mcr-mahjong:0.1.0")
 }
 ```
 
 The single-module build produces the library, sources and documentation JARs,
-a Maven POM and Gradle module metadata. The documentation JAR contains the usage
-and compatibility guides; KDoc is in the sources JAR. No remote Maven repository
-or credentials are configured, and this version is not advertised as published
-to Maven Central. Git commit signing is independent of Maven artifact signing.
+a Maven POM and Gradle module metadata. The `javadoc` JAR contains the generated
+Dokka HTML API reference (`index.html`) and usage/compatibility guides under
+`guides/`; KDoc is also available in the sources JAR. Dokka is build-only.
+Kotlin standard library is an API dependency so Java consumers can also use
+Kotlin-generated public members such as enum entries without adding dependencies.
+
+No remote Maven repository, credentials or artifact signing are configured, and
+this version is not advertised as published to Maven Central. The POM includes
+coordinates, description, MIT license, developer identity, Java-compatible
+dependency scopes and the pinned upstream commit. There is no hosted project
+remote yet, so project/SCM URLs are deliberately omitted instead of fabricated.
+Git commit signing is independent of Maven artifact signing.
 
 ## Kotlin
 
@@ -163,3 +175,15 @@ The normal CI only runs this suite on JDK 17.
 Native differential testing is explicitly opt-in, uses a fixed random seed and
 compares complete outputs rather than just totals. See [tools/README.md](tools/README.md).
 Neither the upstream C++ checkout nor compiled oracle is shipped in the library.
+
+Before using the release artifact, verify both independent consumers after publishing:
+
+```shell
+./gradlew publishToMavenLocal
+./gradlew -p consumers clean verify
+```
+
+The [consumer build](consumers/README.md) has a plain Java project using only the
+Maven POM and a Kotlin project using Gradle module metadata. Neither depends on
+the library's project/source sets. The artifact must exist in Maven Local;
+consumer resolution never substitutes a remote copy of `mcr-mahjong`.
