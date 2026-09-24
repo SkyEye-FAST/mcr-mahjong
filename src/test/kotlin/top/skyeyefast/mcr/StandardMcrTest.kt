@@ -19,7 +19,7 @@ class StandardMcrTest {
 
     @Test
     fun publicVocabularyIsStandardAndOracleVocabularyIsNotChanged() {
-        assertEquals("wmo-2006-en", McrMahjong.SCORING_PROFILE)
+        assertEquals("wmo-2013-en", McrMahjong.SCORING_PROFILE)
         assertEquals(81, Fan.entries.size)
         assertEquals(82, UpstreamFan.entries.size)
         assertEquals(Fan.entries.map { it.name }, UpstreamFan.entries.take(81).map { it.name })
@@ -32,7 +32,7 @@ class StandardMcrTest {
 
     @Test
     fun mixedKongsUseTheSixPointClauseAndCanReachMinimum() {
-        // WMO 2006 fan 57. Not a new five-point fan or a 1+2 sum.
+        // Revised English text, fan 57. Not an extra fan or a 1+2 sum.
         val result = score("[1111m][2222s1]345pEE67s8s", selfDrawn = true)
         assertEquals(8, result.totalFan)
         assertEquals(1, result.count(Fan.TWO_MELDED_KONGS))
@@ -52,7 +52,7 @@ class StandardMcrTest {
 
     @Test
     fun twoConcealedKongsAreEightAndFlowersStaySeparate() {
-        // WMO 2006 Two Concealed Kongs (eight-point group).
+        // Revised English text, Two Concealed Kongs (eight-point group).
         val result = score("[1111m][2222s]345pEE67s8s", selfDrawn = true, flowers = 3)
         assertEquals(13, result.nonFlowerFan)
         assertEquals(16, result.totalFan)
@@ -63,7 +63,7 @@ class StandardMcrTest {
 
     @Test
     fun mandatoryConcealedFormsCanCombineFullyConcealedOnSelfDraw() {
-        // Explicit combinations in WMO 2006 pp. 17, 34-39 and 45.
+        // Explicit combinations in the pinned revised English text.
         val cases = listOf(
             "19m19s19pESWNCFPN" to 92,
             "11223344556677m" to 92,
@@ -99,7 +99,7 @@ class StandardMcrTest {
 
     @Test
     fun allTerminalsMayAddDoublePungsButDoesNotDoubleCountATriple() {
-        // WMO 2006 fan 8, All Terminals.
+        // Revised English text, fan 8, All Terminals.
         val doubles = score("[111m][111s][999m]99s1p1p9s")
         assertEquals(68, doubles.totalFan)
         assertEquals(2, doubles.count(Fan.DOUBLE_PUNG))
@@ -111,7 +111,7 @@ class StandardMcrTest {
 
     @Test
     fun greenHandsRetainTheirExplicitHalfFlushCombination() {
-        // WMO 2006 fan 3, All Green; Half Flush is not automatically suppressed.
+        // Revised English text, fan 3; Half Flush is not suppressed.
         val result = score("223344668888sFF", selfDrawn = true)
         assertEquals(124, result.totalFan)
         assertEquals(1, result.count(Fan.ALL_GREEN))
@@ -123,17 +123,17 @@ class StandardMcrTest {
     }
 
     @Test
-    fun twoKongCorrectionsDoNotApplyToSubsetsOfThreeKongs() {
-        // Selected September 2006 booklet, fan 17, printed p. 38. Do not import
-        // the additional concealed-kong wording from differently edited copies.
+    fun threeKongsApplyTheirSeparateRevisedAppendixClause() {
+        // Pinned revised text (2013 postscript), appendix fan 17, printed p. 39.
+        // The earlier September 2006 booklet lacks this wording; it is not our profile.
         val one = score("[2222s][3333s1][5555p1]67mEE8m")
-        assertEquals(32, one.totalFan)
+        assertEquals(34, one.totalFan)
         assertEquals(1, one.count(Fan.THREE_KONGS))
-        assertEquals(0, one.count(Fan.CONCEALED_KONG))
+        assertEquals(1, one.count(Fan.CONCEALED_KONG))
         val two = score("[2222s][3333s][5555p1]67mEE8m")
-        assertEquals(34, two.totalFan)
-        assertEquals(0, two.count(Fan.TWO_CONCEALED_KONGS))
-        assertEquals(1, two.count(Fan.TWO_CONCEALED_PUNGS))
+        assertEquals(40, two.totalFan)
+        assertEquals(1, two.count(Fan.TWO_CONCEALED_KONGS))
+        assertEquals(0, two.count(Fan.TWO_CONCEALED_PUNGS))
         val three = score("[2222s][3333s][5555p]67mEE8m")
         assertEquals(50, three.totalFan)
         assertEquals(1, three.count(Fan.THREE_CONCEALED_PUNGS))

@@ -4,7 +4,7 @@ import top.skyeyefast.mcr.*;
 
 public final class JavaConsumer {
     public static void main(String[] args) {
-        if (!"wmo-2006-en".equals(McrMahjong.SCORING_PROFILE)) {
+        if (!"wmo-2013-en".equals(McrMahjong.SCORING_PROFILE)) {
             throw new AssertionError("Unexpected public scoring contract");
         }
         // This return type belongs to kotlin-stdlib, which must be on the Java compile classpath.

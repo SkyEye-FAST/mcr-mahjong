@@ -80,7 +80,7 @@ class DiscardAnalysis private constructor(
  */
 object McrMahjong {
     /** Fixed public scoring contract; see COMPATIBILITY.md for its source and release-review limits. */
-    const val SCORING_PROFILE: String = "wmo-2006-en"
+    const val SCORING_PROFILE: String = "wmo-2013-en"
 
     /**
      * Calculates structural shanten and effective tiles for a hand before drawing.
@@ -131,7 +131,7 @@ object McrMahjong {
     }
 
     /**
-     * Scores using the WMO 2006 English MCR baseline documented in COMPATIBILITY.md,
+     * Scores using the revised WMO English MCR text pinned in COMPATIBILITY.md,
      * not the upstream's default rule extensions. Invalid inputs throw; a valid
      * non-winning shape returns [ScoreResult.NotWinning].
      */

@@ -7,7 +7,7 @@ Consumers should store tile/fan names rather than internal numbers.
 
 ## Two separate contracts
 
-**Public scoring profile: `wmo-2006-en`.** `McrMahjong.score` uses the WMO 2006
+**Public scoring profile: `wmo-2013-en`.** `McrMahjong.score` uses the revised WMO
 English *Mahjong Competition Rules* text identified below, with the documented
 knitted-wait interpretation. This is not a claim of interchangeability with the
 original 1998 Chinese rules or later online-house-rule profiles. `Fan` contains
@@ -28,13 +28,17 @@ No user-selectable collection of house-rule switches or compatibility fallback i
 
 ### Rule sources
 
-The primary reference actually inspected is the [WMO 2006 English MCR booklet,
-September 2006 copy](https://ftp.space.dtu.dk/pub/fch/mahjong/mje0906-a5bog.pdf).
-It is a two-pages-per-sheet booklet: use the named fan definitions and printed
-page numbers, not PDF indices. The [Danish association's rules page](https://mahjong.dk/regler)
-identifies the September 2006 English translation and warns about unclear wording.
-This candidate must not be presented as independently certified compliance with
-the original 1998 Chinese rules, or as a verified implementation of every later WMO edition.
+The primary reference is the [revised WMO English MCR text hosted by the Dutch
+Mahjong Association](https://mahjongbond.org/wp-content/uploads/2015/07/NMB-MCR-Groene-boekje.pdf).
+The exact inspected file has 79 PDF pages and SHA-256
+`7b747d574cc942c4855bbd6d1f36bc179ac4a4bc65c840b36cb3b8bb0105b84f`.
+Its foreword is dated September 2006, but its postscript (printed p. 73) is dated
+2013 and explicitly describes revisions made after the 2007 championship.
+The PDF creation timestamp is April 11, 2014. The local profile identifier names
+the **2013 postscript**, not an asserted WMO version number or the PDF creation year.
+References below use printed page numbers; add six to obtain the one-based PDF page.
+The preface (printed p. 1) says translation disputes are governed by the Chinese
+original. This candidate is not certified conformance to every Chinese/English edition.
 
 The [2024 World Mahjong Championship organizer's published clarifications](https://www.mahjong-ca.org/%E8%A1%A5%E5%85%85%E8%A7%84%E5%88%99%E5%92%8C%E8%AE%A1%E5%88%86%E8%A1%A8/)
 provide a direct reference for the retained knitted-body wait interpretation and
@@ -43,13 +47,14 @@ not retroactively described as wording present in the 1998 rules.
 
 ### Audited scoring differences
 
-| Case | Pinned upstream | Public `wmo-2006-en` treatment | Reference |
+| Case | Pinned upstream | Public `wmo-2013-en` treatment | Reference |
 | --- | --- | --- | --- |
 | One concealed and one exposed kong | Separate five-point entry | Six points under the Two Melded Kongs entry's explicit mixed-kong clause | fan 57, printed p. 21 |
 | Two concealed kongs | Six points | Eight points | Two Concealed Kongs, eight-point group |
 | Self-drawn mandatory-concealed forms | Normally the one-point Self Drawn addition | Fully Concealed Hand where explicitly allowed; no duplicate Self Drawn | fans 4, 6, 7, 12, 19, 20, 34 |
-| All Green with green dragons | Half Flush removed | Half Flush retained | fan 3, printed p. 33, including the seven-pairs self-draw example |
+| All Green with green dragons | Half Flush removed | Half Flush retained | fan 3, printed pp. 34-35, including the seven-pairs self-draw example |
 | All Terminals | Double Pung removed | Permitted pairs of pungs restored, except where absorbed by Triple Pung; never manufactured for a seven-pairs decomposition | fan 8 |
+| Three Kongs with one/two concealed kongs | Only concealed-pung series retained | Add Concealed Kong / Two Concealed Kongs respectively, suppressing Two Concealed Pungs when absorbed; three concealed kongs retain Three/Four Concealed Pungs | fan 17, appendix, printed p. 39 |
 
 The mixed-kong case is represented by one `FanCount` for the rulebook's
 `TWO_MELDED_KONGS` entry with `isMixedKongPair == true` and `points == 6`.
@@ -60,23 +65,22 @@ subtotal and the flag when displaying the mixed case. This avoids both an 82nd f
 and a misleading breakdown that reports two exposed kongs plus a concealed kong.
 The flag is rejected on every other fan or when its count is not one.
 
-The two-kong adjustment does not apply to subsets of Three/Four Kongs. Their
-concealed-pung combination handling remains the raw engine's existing handling;
-it is not independently expanded from other editions' wording. The 2006 Three
-Kongs definition explicitly allows Three Concealed Pungs when all three are concealed.
+The mixed-two-kong adjustment is not applied to subsets of Three/Four Kongs.
+Three Kongs has its own explicit concealed-kong combination clause in the selected
+revised appendix. Four Kongs retains the concealed-pung series; the Three Kongs
+clause is not extrapolated to it. The summary table's Three Kongs wording is less
+precise than its appendix; this profile follows the detailed appendix.
 
-Source copies must not be silently merged: the September 2006 booklet's fan 17
-(printed p. 38) and the differently edited [Dutch-hosted text](https://mahjongbond.org/wp-content/uploads/2015/07/NMB-MCR-Groene-boekje.pdf)
-(printed p. 39) do not have identical concealed-kong combination wording. The latter
-is not the normative source for this named profile. Changing that choice requires
-an explicit profile/source review and independent expected results, not a change
-to the raw C++ fixtures.
+The [earlier September 2006 booklet](https://ftp.space.dtu.dk/pub/fch/mahjong/mje0906-a5bog.pdf)
+has different Three Kongs wording (printed p. 38). It is **not** the normative source
+of this revised profile. The initial working label `wmo-2006-en` was corrected
+before release after verifying the foreword, postscript and appendix of both copies.
+Do not replace these explicit expectations with a mixture of editions.
 
 The [WMO 2021 document](https://www.mindmahjong.com/adobe/MCR2021.pdf) has not been
 fully retrieved and audited here. It is not a normative source for this candidate,
 and no conformance claim to that edition is made. The corrections above are backed
-by the inspected September 2006 booklet, not inferred from search snippets about
-other editions.
+by the inspected revised English text, not inferred from search snippets about other editions.
 
 The former public `WinContext.initial` and mixed-kong enum entry are removed
 before the first release. The initial-hand/nine-gates branch, including its

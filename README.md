@@ -2,7 +2,7 @@
 
 A standalone **Kotlin/JVM 17** library for Mahjong Competition Rules (国标麻将).
 
-**Unreleased candidate:** public scoring explicitly targets the WMO 2006 English
+**Unreleased candidate:** public scoring explicitly targets the revised WMO English
 reference described in [COMPATIBILITY.md](COMPATIBILITY.md), not the upstream's
 house-rule defaults or every rule set called “国标”. Its 81-fan public API and
 the 82-entry C++ compatibility baseline are separate. Formal publication remains
@@ -27,7 +27,8 @@ is internal: the public scorer applies the rulebook's six-point combination and
 eight-point Two Concealed Kongs. Corrections are applied before choosing the best
 decomposition; they are not a rescaling of an already-selected upstream result.
 
-`McrMahjong.SCORING_PROFILE` identifies this fixed contract as `wmo-2006-en`.
+`McrMahjong.SCORING_PROFILE` identifies this fixed contract as `wmo-2013-en`,
+named after the inspected document's 2013 postscript, not its PDF creation date.
 For the mixed-kong exception, the result has one entry under the rulebook's
 `TWO_MELDED_KONGS` category with `FanCount.isMixedKongPair == true` and
 `FanCount.points == 6`. It does not also award the individual kongs. Display that

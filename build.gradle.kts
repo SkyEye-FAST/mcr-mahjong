@@ -153,7 +153,7 @@ tasks.register("verifyPublication") {
         check(value("/project/artifactId") == "mcr-mahjong")
         check(value("/project/version") == expectedVersion)
         check(value("/project/licenses/license/name") == "MIT License")
-        check(value("/project/properties/mcr.scoring.profile") == "wmo-2006-en")
+        check(value("/project/properties/mcr.scoring.profile") == "wmo-2013-en")
         check(value("/project/dependencies/dependency/artifactId") == "kotlin-stdlib")
         check(value("/project/dependencies/dependency/scope") == "compile")
         check(xpath.evaluate("count(/project/dependencies/dependency)", doc) == "1")
@@ -181,7 +181,7 @@ publishing {
                 description = "Pure Kotlin/JVM Mahjong Competition Rules shanten and fan calculation."
                 inceptionYear = "2026"
                 properties.put("mcr.upstream.commit", "44a178af08bf11f82a8993fddbe2fe8876ddd8f3")
-                properties.put("mcr.scoring.profile", "wmo-2006-en")
+                properties.put("mcr.scoring.profile", "wmo-2013-en")
                 properties.put("mcr.release.status", "rules-review-pending")
                 developers {
                     developer {

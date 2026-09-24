@@ -2,7 +2,7 @@
  * Copyright (c) 2016-2027 Jeff Wang. MIT license; see LICENSE and NOTICE. */
 package top.skyeyefast.mcr
 
-/** The 81 fan identifiers of the WMO 2006 English MCR scoring baseline; see COMPATIBILITY.md. */
+/** The 81 fan identifiers of the pinned revised WMO English MCR text; see COMPATIBILITY.md. */
 enum class Fan(val points: Int, val chineseName: String) {
     BIG_FOUR_WINDS(88, "大四喜"), BIG_THREE_DRAGONS(88, "大三元"), ALL_GREEN(88, "绿一色"),
     NINE_GATES(88, "九莲宝灯"), FOUR_KONGS(88, "四杠"), SEVEN_SHIFTED_PAIRS(88, "连七对"), THIRTEEN_ORPHANS(88, "十三幺"),

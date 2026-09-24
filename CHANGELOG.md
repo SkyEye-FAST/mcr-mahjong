@@ -2,7 +2,7 @@
 
 ## 0.1.0 (unreleased; rules review pending)
 
-Separate the public WMO-2006-English profile from the pinned upstream compatibility
+Separate the public revised-WMO-English profile (2013 postscript) from the pinned upstream compatibility
 engine. Remove the five-point mixed-kong public enum entry and the public initial-hand
 flag before release. Apply the sourced mixed-kong, concealed-kong, self-draw and
 fan-combination adjustments to each candidate before maximum-score selection.

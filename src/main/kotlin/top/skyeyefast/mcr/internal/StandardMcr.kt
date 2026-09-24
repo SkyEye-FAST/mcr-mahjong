@@ -3,13 +3,14 @@ package top.skyeyefast.mcr.internal
 import top.skyeyefast.mcr.Fan
 import top.skyeyefast.mcr.FanCount
 import top.skyeyefast.mcr.Hand
+import top.skyeyefast.mcr.Meld
 import top.skyeyefast.mcr.ScoreResult
 import top.skyeyefast.mcr.Tile
 import top.skyeyefast.mcr.WinContext
 import top.skyeyefast.mcr.WinMethod
 import top.skyeyefast.mcr.internal.UpstreamFan.*
 
-/** WMO 2006 English scoring adjustments; clauses and source are recorded in COMPATIBILITY.md. */
+/** WMO English revised text (2013 postscript); exact source is pinned in COMPATIBILITY.md. */
 internal object StandardMcr {
     private operator fun IntArray.get(fan: UpstreamFan): Int = this[fan.index]
     private operator fun IntArray.set(fan: UpstreamFan, value: Int) { this[fan.index] = value }
@@ -28,6 +29,19 @@ internal object StandardMcr {
             // Restore Half Flush for All Green only when green dragons are present.
             if (table[ALL_GREEN] != 0 && (winningTile == Tile.GREEN || hand.remainingCopies(Tile.GREEN) < 4)) {
                 table[HALF_FLUSH] = 1
+            }
+
+            // Revised English appendix fan 17 (printed p. 39) permits Concealed
+            // Kong / Two Concealed Kongs within Three Kongs. This is independent
+            // of the mixed-two-kong clause and never applies to Four Kongs.
+            if (table[THREE_KONGS] != 0) {
+                when (hand.melds.count { it is Meld.Kong && it.from == null }) {
+                    1 -> table[CONCEALED_KONG] = 1
+                    2 -> {
+                        table[TWO_CONCEALED_KONGS] = 1
+                        table[TWO_CONCEALED_PUNGS] = 0
+                    }
+                }
             }
 
             // These mandatory-concealed forms explicitly allow Fully Concealed
