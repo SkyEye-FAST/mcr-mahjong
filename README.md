@@ -1,8 +1,9 @@
 # mcr-mahjong
 
 A standalone **Kotlin/JVM 17** library for Mahjong Competition Rules (国标麻将).
-The only runtime dependency is Kotlin's standard library. There are no Minecraft,
-mod-loader, native-library, JNI or Python dependencies.
+The only direct library dependency is Kotlin's standard library, which brings
+JetBrains annotations transitively. There are no Minecraft, mod-loader,
+native-library, JNI or Python dependencies.
 
 This is a behavior-first port of Jeff Wang's MIT-licensed
 [mahjong-algorithm](https://github.com/summerinsects/mahjong-algorithm), pinned to

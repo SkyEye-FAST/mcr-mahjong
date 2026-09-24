@@ -55,8 +55,9 @@ wall availability or all circumstances of a legal call.
 
 ## Dependencies and publishing
 
-Java 17 is both the bytecode target and the Java API baseline. Runtime dependency:
-Kotlin standard library only. JUnit and the optional C++ process are test-only.
+Java 17 is both the bytecode target and the Java API baseline. The sole direct
+library dependency is Kotlin's standard library; JetBrains annotations is its
+transitive dependency. JUnit and the optional C++ process are test-only.
 The C++ oracle communicates over standard input/output; no native code is loaded
 into the JVM or bundled in Maven artifacts.
 
