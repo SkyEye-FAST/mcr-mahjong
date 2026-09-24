@@ -6,8 +6,10 @@ A standalone **Kotlin/JVM 17** library for Mahjong Competition Rules (国标麻�
 first edition/first printing, December 2014, described with its official source and
 SHA-256 in [COMPATIBILITY.md](COMPATIBILITY.md). This is not the upstream's
 house-rule default or every rule set called “国标”. Its 81-fan public API and the
-82-entry C++ compatibility baseline are separate. Formal publication remains on
-hold because the Chinese text does not settle every Combination Dragon wait overlap.
+82-entry C++ compatibility baseline are separate. This remains a local, unreleased
+`0.1.0` candidate. Audited rule interpretations and their Chinese page references
+are recorded in [COMPATIBILITY.md](COMPATIBILITY.md), including Combination Dragon
+residual waits.
 The only direct library dependency is Kotlin's standard library, which brings
 JetBrains annotations transitively. There are no Minecraft, mod-loader,
 native-library, JNI or Python dependencies.

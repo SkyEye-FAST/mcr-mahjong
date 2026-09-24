@@ -70,7 +70,7 @@ the basis for rule decisions.
 | 附件一第8番「清幺九」, p. 26: excludes 碰碰和、全带幺、幺九刻、无字; examples permit “两个双同刻” or “三同刻” | Removes Double Pung whenever All Terminals is present. | Restore separate Double Pungs unless their pungs are already used by Triple Pung; do not invent pungs for Seven Pairs. | Keep the correction. Triple Pung absorbs its constituent pairs under the non-repetition/non-splitting principles (printed p. 19). |
 | 附件一第4番「九莲宝灯」, p. 24: excludes 清一色、门前清、幺九刻; 第6番「连七对」, pp. 24–25: excludes 清一色、门前清、单调将; 第19番「七对」, p. 31: excludes 门前清、单调将 | These special paths do not emit those excluded fans. | Public scoring retained those exclusions. | Keep them; independent assertions cover the high-impact special-hand and self-draw cases. |
 | 附件一第20番「七星不靠」, p. 31, and第34番「全不靠」, p. 34: self-draw adds 不求人; both exclude 五门齐、门前清 | Raw special-form scoring does not add Fully Concealed Hand. | Public normalization adds it on self-draw and leaves the named exclusions absent. | Keep the source-backed handling. |
-| 附件一第35番「组合龙」, p. 35: its example permits 五门齐、门前清、箭刻、单调将; wait-fan definitions, p. 45 | The raw knitted path can award an edge/closed/single wait when the winning tile overlaps the special body and an ordinary wait interpretation. | Public scoring retained that upstream wait behavior and previously cited a tournament clarification. | This source confirms a residual Single Wait combination, but does not settle every body-overlap interpretation. The tournament clarification is scoped to its event and is not evidence for this profile. The overlapping wait remains a release blocker; it must not be certified from English wording or raw oracle output. |
+| 附件一第35番「组合龙」, p. 35, definition and example 1; 3.9.1(6) 不拆移原则, p. 19 (“不拆开互相组成其他番种”); 附件一第77–79番等待定义, pp. 45–46 (“只能听和123的3或789的7”, “只能听和顺子中间的牌”, “调单张牌作将和牌”) | With `KNITTED_STRAIGHT_BODY_WITH_ECS=1`, the raw path removes the knitted body and evaluates the wait in the residual structure. It can count edge/closed/single wait when the winning tile kind also occurs in the body, provided another physical copy completes the residual wait. | Before this clarification the public scorer retained that behavior, but its documented basis was an event-scoped tournament clarification rather than the Chinese rule text. | Apply the Chinese clauses to the selected candidate: keep the nine-tile Combination Dragon fixed under the p. 19 non-splitting rule, then assess the remaining wait in the residual tiles. The p. 35 example explicitly combines Combination Dragon and Single Wait; pp. 45–46 require the corresponding wait shape, and “只能听和” excludes a wait when another tile kind also completes the residual. A tile already allocated to the knitted body cannot be reused; an additional copy may complete the residual. Independent tests cover overlapping edge, closed and single waits, a win that completes only the body, and a residual with two winning tile kinds. No tournament or English wording is used as authority. |
 
 #### Other exclusion relationships checked
 
@@ -95,7 +95,7 @@ option.
 | Fixed switch | Classification | Public treatment |
 | --- | --- | --- |
 | `SUPPORT_CONCEALED_KONG_AND_MELDED_KONG=1` | Historical upstream extension/encoding | Preserve five-point internal entry for C++ parity; apply the sourced six-point public combination above. |
-| `KNITTED_STRAIGHT_BODY_WITH_ECS=1` | Upstream interpretation of waits when the winning tile overlaps the knitted body | The 2014 Chinese text confirms the residual Single Wait combination in its example, but does not settle every overlapping body/edge/closed/single interpretation. Do not use the event-scoped 2024 clarification as authority; this behavior remains a release blocker. |
+| `KNITTED_STRAIGHT_BODY_WITH_ECS=1` | Candidate wait calculation after removing the knitted body | Retain only waits supported by the Chinese residual-structure interpretation above. The fixed body is not split or reused; the residual must have the corresponding unique wait. |
 | `DISTINGUISH_PURE_SHIFTED_CHOWS=0` | Standard fan taxonomy; optional split is an upstream extension | One public three-shifted and one four-shifted fan; permitted step sizes do not become separate public fans. See fans 16 and 30. |
 | `NINE_GATES_WHEN_BLESSING_OF_HEAVEN=1` | Upstream initial-hand interpretation and historical implementation quirk | Keep only in raw compatibility path; public context has no initial-hand flag. |
 | `SUPPORT_BLESSINGS=0` | Standard 81-fan scope; enabled alternative adds house-rule fans | No Heaven/Earth/Human blessing fans in the public API. |
@@ -179,11 +179,15 @@ runs build (including ABI and publication-file checks), Maven Local publication,
 then the independent Java/POM and Kotlin/Gradle-metadata consumers. Native C++
 differential testing remains explicit opt-in, not a normal CI prerequisite.
 
-### Release hold
+### Release rule gate
 
-No formal `v0.1.0` tag or public Maven deployment is authorized while the rules
-review is pending. The remaining blocker is the Chinese text's treatment of waits
-when the winning tile overlaps a Combination Dragon body; the confirmed residual
-Single Wait example does not settle all edge/closed/single interpretations. Do not
-resolve this from English wording, pinned upstream output or a tournament supplement.
-Passing upstream differential or ABI checks alone cannot clear this semantic hold.
+The previously recorded Combination Dragon wait blocker is resolved for this
+profile by applying the Chinese non-splitting principle, Combination Dragon example
+and wait-fan definitions to the same candidate's residual tiles. The selected
+2014 Chinese edition remains the sole rules authority; the pinned C++ oracle and
+event supplements do not establish public semantics. No standalone WMO corrigendum
+was linked from the official rules index or found in the official notices reviewed
+as of 2026-09-24.
+
+This review clears the known rule gate for the audited 2014 profile. It does not
+publish the local `0.1.0` candidate or create a version tag.
