@@ -19,7 +19,7 @@ class StandardMcrTest {
 
     @Test
     fun publicVocabularyIsStandardAndOracleVocabularyIsNotChanged() {
-        assertEquals("wmo-2013-en", McrMahjong.SCORING_PROFILE)
+        assertEquals("wmo-2014-zh", McrMahjong.SCORING_PROFILE)
         assertEquals(81, Fan.entries.size)
         assertEquals(82, UpstreamFan.entries.size)
         assertEquals(Fan.entries.map { it.name }, UpstreamFan.entries.take(81).map { it.name })
@@ -32,7 +32,7 @@ class StandardMcrTest {
 
     @Test
     fun mixedKongsUseTheSixPointClauseAndCanReachMinimum() {
-        // Revised English text, fan 57. Not an extra fan or a 1+2 sum.
+        // Chinese MCR Annex I, fan 57 (printed p. 40): the mixed pair is six.
         val result = score("[1111m][2222s1]345pEE67s8s", selfDrawn = true)
         assertEquals(8, result.totalFan)
         assertEquals(1, result.count(Fan.TWO_MELDED_KONGS))
@@ -41,8 +41,10 @@ class StandardMcrTest {
         val kongs = result.fans.single { it.fan == Fan.TWO_MELDED_KONGS }
         assertTrue(kongs.isMixedKongPair)
         assertEquals(6, kongs.points)
+        assertEquals(result.totalFan, result.fans.sumOf { it.points })
         assertFailsWith<IllegalArgumentException> { kongs.copy(count = 2) }
         assertFailsWith<IllegalArgumentException> { kongs.copy(fan = Fan.CONCEALED_KONG) }
+        assertFailsWith<IllegalArgumentException> { FanCount(Fan.CONCEALED_KONG, 1, isMixedKongPair = true) }
         assertTrue(result.meetsMinimum)
         val raw = ReferenceProtocol.compactScore(ReferenceProtocol.calculate("F|[1111m][2222s1]345pEE67s8s|1|0|0|0"))
         assertTrue(raw.startsWith("7;"))
@@ -52,7 +54,7 @@ class StandardMcrTest {
 
     @Test
     fun twoConcealedKongsAreEightAndFlowersStaySeparate() {
-        // Revised English text, Two Concealed Kongs (eight-point group).
+        // Chinese MCR fan table (printed p. 14): Two Concealed Kongs is eight.
         val result = score("[1111m][2222s]345pEE67s8s", selfDrawn = true, flowers = 3)
         assertEquals(13, result.nonFlowerFan)
         assertEquals(16, result.totalFan)
@@ -63,10 +65,12 @@ class StandardMcrTest {
 
     @Test
     fun mandatoryConcealedFormsCanCombineFullyConcealedOnSelfDraw() {
-        // Explicit combinations in the pinned revised English text.
+        // Chinese MCR Annex I: these forms explicitly add Fully Concealed Hand
+        // on self-draw; see printed pp. 23-30 and 34-35.
         val cases = listOf(
             "19m19s19pESWNCFPN" to 92,
             "11223344556677m" to 92,
+            "1133557799m22s44p" to 29,
             "1112345678999p9p" to 110,
             "EESSWWNNCCFFPP" to 92,
             "69m258s1pESWNCFP3m" to 28,
@@ -99,7 +103,8 @@ class StandardMcrTest {
 
     @Test
     fun allTerminalsMayAddDoublePungsButDoesNotDoubleCountATriple() {
-        // Revised English text, fan 8, All Terminals.
+        // Chinese MCR Annex I, All Terminals (printed p. 26) explicitly shows
+        // two Double Pungs; the triple-pung example must not split those pungs.
         val doubles = score("[111m][111s][999m]99s1p1p9s")
         assertEquals(68, doubles.totalFan)
         assertEquals(2, doubles.count(Fan.DOUBLE_PUNG))
@@ -111,7 +116,8 @@ class StandardMcrTest {
 
     @Test
     fun greenHandsRetainTheirExplicitHalfFlushCombination() {
-        // Revised English text, fan 3; Half Flush is not suppressed.
+        // Chinese MCR Annex I (printed p. 23): Green One explicitly allows
+        // Half Flush with green dragons and Full Flush without honors.
         val result = score("223344668888sFF", selfDrawn = true)
         assertEquals(124, result.totalFan)
         assertEquals(1, result.count(Fan.ALL_GREEN))
@@ -119,13 +125,17 @@ class StandardMcrTest {
         assertEquals(1, result.count(Fan.HALF_FLUSH))
         assertEquals(1, result.count(Fan.TILE_HOG))
         assertEquals(1, result.count(Fan.FULLY_CONCEALED_HAND))
+        val pureSuit = score("22334466888866s", selfDrawn = true)
+        assertEquals(1, pureSuit.count(Fan.ALL_GREEN))
+        assertEquals(1, pureSuit.count(Fan.FULL_FLUSH))
+        assertEquals(0, pureSuit.count(Fan.HALF_FLUSH))
         assertEquals(0, score("[234s][234s][234s][234s]6s6s").count(Fan.HALF_FLUSH))
     }
 
     @Test
-    fun threeKongsApplyTheirSeparateRevisedAppendixClause() {
-        // Pinned revised text (2013 postscript), appendix fan 17, printed p. 39.
-        // The earlier September 2006 booklet lacks this wording; it is not our profile.
+    fun threeKongsApplyTheChineseConcealedKongClause() {
+        // Chinese MCR Annex I, fan 17 (printed p. 28): concealed kongs add;
+        // three concealed kongs also add Three Concealed Pungs.
         val one = score("[2222s][3333s1][5555p1]67mEE8m")
         assertEquals(34, one.totalFan)
         assertEquals(1, one.count(Fan.THREE_KONGS))
@@ -139,6 +149,77 @@ class StandardMcrTest {
         assertEquals(1, three.count(Fan.THREE_CONCEALED_PUNGS))
         assertEquals(0, three.count(Fan.TWO_CONCEALED_KONGS))
         assertEquals(0, three.count(Fan.CONCEALED_KONG))
+    }
+
+    @Test
+    fun threeKongsCombineConcealedKongsWithTheConcealedPungSeries() {
+        // Chinese MCR Annex I, fan 17 (p. 28), plus Three Concealed Pungs (p. 33):
+        // concealed kongs also qualify as concealed pungs for the concealed-set series.
+        val kongTiles = listOf(Tile.M2, Tile.S5, Tile.P8)
+        val expectedTotals = listOf(43, 63, 100)
+        for (concealed in 1..3) {
+            val melds = kongTiles.mapIndexed { index, tile ->
+                Meld.Kong(tile, if (index < concealed) null else RelativePlayer.LEFT)
+            }
+            val result = McrMahjong.score(
+                Hand(listOf(Tile.M4, Tile.M4, Tile.EAST, Tile.EAST), melds), Tile.M4,
+                WinContext(method = WinMethod.SELF_DRAW),
+            ) as ScoreResult.Winning
+            assertEquals(expectedTotals[concealed - 1], result.totalFan, "concealed=$concealed $result")
+            assertEquals(result.totalFan, result.fans.sumOf { it.points }, "concealed=$concealed")
+            assertEquals(1, result.count(Fan.THREE_KONGS))
+            when (concealed) {
+                1 -> {
+                    assertEquals(1, result.count(Fan.CONCEALED_KONG))
+                    assertEquals(1, result.count(Fan.TWO_CONCEALED_PUNGS))
+                    assertEquals(0, result.count(Fan.TWO_CONCEALED_KONGS))
+                }
+                2 -> {
+                    assertEquals(1, result.count(Fan.TWO_CONCEALED_KONGS))
+                    assertEquals(1, result.count(Fan.THREE_CONCEALED_PUNGS))
+                    assertEquals(0, result.count(Fan.TWO_CONCEALED_PUNGS))
+                }
+                3 -> {
+                    assertEquals(1, result.count(Fan.FOUR_CONCEALED_PUNGS))
+                    assertEquals(1, result.count(Fan.FULLY_CONCEALED_HAND))
+                    assertEquals(0, result.count(Fan.CONCEALED_KONG))
+                }
+            }
+        }
+    }
+
+    @Test
+    fun fourKongsAddConcealedKongFansAndKeepTheFourConcealedPungCombination() {
+        // Chinese MCR Annex I (printed p. 24): Four Kongs adds concealed kongs
+        // and excludes Single Wait. The fan table (printed pp. 12-14) supplies
+        // the concealed-kong / concealed-pung values.
+        val tiles = listOf(Tile.M2, Tile.M8, Tile.S4, Tile.P7)
+        val expected = listOf(94, 90, 96, 104, 156)
+        for (concealed in 0..4) {
+            val melds = tiles.mapIndexed { index, tile ->
+                Meld.Kong(tile, if (index < concealed) null else RelativePlayer.LEFT)
+            }
+            val result = assertIs<ScoreResult.Winning>(McrMahjong.score(
+                Hand(listOf(Tile.EAST), melds), Tile.EAST,
+                WinContext(method = if (concealed == 4) WinMethod.SELF_DRAW else WinMethod.DISCARD),
+            ))
+            assertEquals(expected[concealed], result.totalFan, "concealed=$concealed $result")
+            assertEquals(result.totalFan, result.fans.sumOf { it.points }, "concealed=$concealed")
+            assertEquals(0, result.count(Fan.SINGLE_WAIT), "concealed=$concealed")
+            when (concealed) {
+                1 -> assertEquals(1, result.count(Fan.CONCEALED_KONG))
+                2 -> {
+                    assertEquals(1, result.count(Fan.TWO_CONCEALED_KONGS))
+                    assertEquals(0, result.count(Fan.TWO_CONCEALED_PUNGS))
+                }
+                3 -> assertEquals(1, result.count(Fan.THREE_CONCEALED_PUNGS))
+                4 -> {
+                    assertEquals(1, result.count(Fan.FOUR_CONCEALED_PUNGS))
+                    assertEquals(1, result.count(Fan.FULLY_CONCEALED_HAND))
+                    assertEquals(0, result.count(Fan.SELF_DRAWN))
+                }
+            }
+        }
     }
 
     @Test

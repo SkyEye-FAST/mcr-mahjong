@@ -10,7 +10,7 @@ import top.skyeyefast.mcr.WinContext
 import top.skyeyefast.mcr.WinMethod
 import top.skyeyefast.mcr.internal.UpstreamFan.*
 
-/** WMO English revised text (2013 postscript); exact source is pinned in COMPATIBILITY.md. */
+/** WMO 2014 Chinese MCR edition; source and review status are pinned in COMPATIBILITY.md. */
 internal object StandardMcr {
     private operator fun IntArray.get(fan: UpstreamFan): Int = this[fan.index]
     private operator fun IntArray.set(fan: UpstreamFan, value: Int) { this[fan.index] = value }
@@ -31,11 +31,19 @@ internal object StandardMcr {
                 table[HALF_FLUSH] = 1
             }
 
-            // Revised English appendix fan 17 (printed p. 39) permits Concealed
-            // Kong / Two Concealed Kongs within Three Kongs. This is independent
-            // of the mixed-two-kong clause and never applies to Four Kongs.
-            if (table[THREE_KONGS] != 0) {
-                when (hand.melds.count { it is Meld.Kong && it.from == null }) {
+            // Chinese Appendix I (printed pp. 24, 28 and 33): concealed kongs
+            // add the corresponding kong fan. Three concealed kongs additionally
+            // score Three Concealed Pungs; Four Kongs excludes Single Wait.
+            val concealedKongs = hand.melds.count { it is Meld.Kong && it.from == null }
+            when {
+                table[THREE_KONGS] != 0 -> when (concealedKongs) {
+                    1 -> table[CONCEALED_KONG] = 1
+                    2 -> {
+                        table[TWO_CONCEALED_KONGS] = 1
+                        table[TWO_CONCEALED_PUNGS] = 0
+                    }
+                }
+                table[FOUR_KONGS] != 0 -> when (concealedKongs) {
                     1 -> table[CONCEALED_KONG] = 1
                     2 -> {
                         table[TWO_CONCEALED_KONGS] = 1
@@ -44,8 +52,8 @@ internal object StandardMcr {
                 }
             }
 
-            // These mandatory-concealed forms explicitly allow Fully Concealed
-            // Hand on self-draw in the selected English text, not just Self Drawn.
+            // These forms explicitly add Fully Concealed Hand on self-draw in
+            // the Chinese rule text, not merely the one-point Self Drawn fan.
             if (context.method == WinMethod.SELF_DRAW && (
                     table[NINE_GATES] != 0 || table[SEVEN_SHIFTED_PAIRS] != 0 || table[THIRTEEN_ORPHANS] != 0 ||
                     table[FOUR_CONCEALED_PUNGS] != 0 || table[SEVEN_PAIRS] != 0 ||
