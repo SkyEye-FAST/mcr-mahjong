@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestFactory
 import java.security.MessageDigest
+import top.skyeyefast.mcr.internal.UpstreamFan
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
@@ -46,7 +47,7 @@ class RegressionTest {
         val covered = fixtures("fan-regression.tsv").flatMap { (_, expected) ->
             expected.substringAfter(';').split(',').filter { it.isNotEmpty() }.map { it.substringBefore('=') }
         }.toSet()
-        assertEquals(Fan.entries.map { it.name }.toSet(), covered)
+        assertEquals(UpstreamFan.entries.map { it.name }.toSet(), covered)
     }
 
     @Test
@@ -93,8 +94,8 @@ class RegressionTest {
 
     @Test
     fun flowersDoNotQualifyASevenPointHand() {
-        val (hand, tile) = ReferenceProtocol.parse("[1111m][2222s1]345pEE67s8s")
-        val score = assertIs<ScoreResult.Winning>(McrMahjong.score(hand, tile!!, WinContext(method = WinMethod.SELF_DRAW, flowerCount = 8)))
+        val (hand, tile) = ReferenceProtocol.parse("445566m2277779s8s")
+        val score = assertIs<ScoreResult.Winning>(McrMahjong.score(hand, tile!!, WinContext(flowerCount = 8)))
         assertEquals(15, score.totalFan)
         assertEquals(7, score.nonFlowerFan)
         assertEquals(8, score.count(Fan.FLOWER_TILES))

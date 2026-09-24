@@ -1,5 +1,7 @@
 package top.skyeyefast.mcr
 
+import top.skyeyefast.mcr.internal.FanCalculator
+import top.skyeyefast.mcr.internal.UpstreamFan as Fan
 import java.io.Closeable
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.Executors
@@ -36,7 +38,7 @@ internal object ReferenceProtocol {
             method = if ((flags and 1) != 0) WinMethod.SELF_DRAW else WinMethod.DISCARD,
             prevalentWind = Wind.entries[fields[3].toInt()], seatWind = Wind.entries[fields[4].toInt()],
             flowerCount = fields[5].toInt(), lastTile = (flags and 2) != 0,
-            kongInvolved = (flags and 4) != 0, wallLast = (flags and 8) != 0, initial = (flags and 16) != 0,
+            kongInvolved = (flags and 4) != 0, wallLast = (flags and 8) != 0,
         )
     }
 
@@ -47,10 +49,12 @@ internal object ReferenceProtocol {
         val (hand, drawn) = parse(fields[1])
         return when (fields[0]) {
             "F" -> {
-                val result = McrMahjong.score(hand, requireNotNull(drawn), context(fields))
-                val counts = Fan.entries.map { if (result is ScoreResult.Winning) result.count(it) else 0 }
-                val total = if (result is ScoreResult.Winning) result.totalFan else -3
-                (listOf(total) + counts).joinToString(",")
+                val tile = requireNotNull(drawn)
+                hand.validateAddition(tile)
+                // This protocol compares the unmodified upstream baseline, not public MCR semantics.
+                val result = FanCalculator.calculate(hand.standing(), hand.fixed(), tile.code,
+                    fields[2].toInt(), fields[3].toInt(), fields[4].toInt(), fields[5].toInt())
+                (listOf(result.total) + Fan.entries.map { result.table[it.index] }).joinToString(",")
             }
             "S" -> {
                 val result = McrMahjong.analyze(hand)

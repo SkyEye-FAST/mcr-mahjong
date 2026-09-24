@@ -1,8 +1,8 @@
-/* Names, order and values ported from fan_calculator.h.
+/* Names and ordering derived from fan_calculator.h; public values follow COMPATIBILITY.md.
  * Copyright (c) 2016-2027 Jeff Wang. MIT license; see LICENSE and NOTICE. */
 package top.skyeyefast.mcr
 
-/** The 81 MCR fans, plus upstream's enabled five-point mixed-kong combination. */
+/** The 81 fan identifiers of the WMO 2006 English MCR scoring baseline; see COMPATIBILITY.md. */
 enum class Fan(val points: Int, val chineseName: String) {
     BIG_FOUR_WINDS(88, "大四喜"), BIG_THREE_DRAGONS(88, "大三元"), ALL_GREEN(88, "绿一色"),
     NINE_GATES(88, "九莲宝灯"), FOUR_KONGS(88, "四杠"), SEVEN_SHIFTED_PAIRS(88, "连七对"), THIRTEEN_ORPHANS(88, "十三幺"),
@@ -21,7 +21,7 @@ enum class Fan(val points: Int, val chineseName: String) {
     MIXED_SHIFTED_PUNGS(8, "三色三节高"), CHICKEN_HAND(8, "无番和"), LAST_TILE_DRAW(8, "妙手回春"),
     LAST_TILE_CLAIM(8, "海底捞月"), OUT_WITH_REPLACEMENT_TILE(8, "杠上开花"), ROBBING_THE_KONG(8, "抢杠和"),
     ALL_PUNGS(6, "碰碰和"), HALF_FLUSH(6, "混一色"), MIXED_SHIFTED_CHOWS(6, "三色三步高"),
-    ALL_TYPES(6, "五门齐"), MELDED_HAND(6, "全求人"), TWO_CONCEALED_KONGS(6, "双暗杠"), TWO_DRAGONS_PUNGS(6, "双箭刻"),
+    ALL_TYPES(6, "五门齐"), MELDED_HAND(6, "全求人"), TWO_CONCEALED_KONGS(8, "双暗杠"), TWO_DRAGONS_PUNGS(6, "双箭刻"),
     OUTSIDE_HAND(4, "全带幺"), FULLY_CONCEALED_HAND(4, "不求人"), TWO_MELDED_KONGS(4, "双明杠"), LAST_TILE(4, "和绝张"),
     DRAGON_PUNG(2, "箭刻"), PREVALENT_WIND(2, "圈风刻"), SEAT_WIND(2, "门风刻"), CONCEALED_HAND(2, "门前清"),
     ALL_CHOWS(2, "平和"), TILE_HOG(2, "四归一"), DOUBLE_PUNG(2, "双同刻"), TWO_CONCEALED_PUNGS(2, "双暗刻"),
@@ -29,16 +29,29 @@ enum class Fan(val points: Int, val chineseName: String) {
     PURE_DOUBLE_CHOW(1, "一般高"), MIXED_DOUBLE_CHOW(1, "喜相逢"), SHORT_STRAIGHT(1, "连六"), TWO_TERMINAL_CHOWS(1, "老少副"),
     PUNG_OF_TERMINALS_OR_HONORS(1, "幺九刻"), MELDED_KONG(1, "明杠"), ONE_VOIDED_SUIT(1, "缺一门"), NO_HONORS(1, "无字"),
     EDGE_WAIT(1, "边张"), CLOSED_WAIT(1, "嵌张"), SINGLE_WAIT(1, "单钓"), SELF_DRAWN(1, "自摸"),
-    FLOWER_TILES(1, "花牌"), CONCEALED_KONG_AND_MELDED_KONG(5, "明暗杠");
+    FLOWER_TILES(1, "花牌");
 
     @get:JvmSynthetic
     internal val index: Int get() = ordinal + 1
 }
 
-/** A positive number of occurrences of a fan, with overflow-checked point multiplication. */
-data class FanCount(val fan: Fan, val count: Int) {
-    init { require(count in 1..Int.MAX_VALUE / fan.points) { "Fan count must be positive and its points must fit in Int" } }
-    val points: Int get() = fan.points * count
+/**
+ * A positive number of occurrences of a standard fan.
+ * [isMixedKongPair] identifies the six-point exception within the rulebook's
+ * Two Melded Kongs entry: one concealed and one melded kong, not two melded kongs.
+ * It is not an extra fan and does not additionally award the individual kongs.
+ * [points] is the awarded subtotal; it can differ from `fan.points * count` in that case.
+ */
+data class FanCount @JvmOverloads constructor(
+    val fan: Fan, val count: Int, val isMixedKongPair: Boolean = false,
+) {
+    init {
+        require(count in 1..Int.MAX_VALUE / fan.points) { "Fan count must be positive and its points must fit in Int" }
+        require(!isMixedKongPair || (fan == Fan.TWO_MELDED_KONGS && count == 1)) {
+            "The mixed-kong exception applies only to one Two Melded Kongs entry"
+        }
+    }
+    val points: Int get() = if (isMixedKongPair) 6 else fan.points * count
 }
 
 /** Invalid inputs throw IllegalArgumentException; a valid non-winning shape returns [NotWinning]. */

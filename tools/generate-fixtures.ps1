@@ -7,8 +7,8 @@ $revision = & git -C $Upstream rev-parse HEAD
 if ($LASTEXITCODE -ne 0 -or $revision -ne '44a178af08bf11f82a8993fddbe2fe8876ddd8f3') {
     throw 'The oracle source checkout must match the revision in NOTICE.'
 }
-$fanSource = Get-Content 'src/main/kotlin/top/skyeyefast/mcr/Fan.kt' -Raw
-$names = @([regex]::Matches($fanSource, '\b([A-Z][A-Z_]+)\(\d+,').ForEach({ $_.Groups[1].Value }))
+$fanSource = Get-Content 'src/main/kotlin/top/skyeyefast/mcr/internal/UpstreamFan.kt' -Raw -Encoding UTF8
+$names = @([regex]::Matches($fanSource, '\b([A-Z][A-Z_]+)\(\d+\)').ForEach({ $_.Groups[1].Value }))
 $source = Get-Content "$Upstream/unit_test.cpp" -Raw
 $pattern = '(?m)^\s*test_points\("([^"]+)",\s*([^,]+),\s*wind_t::(\w+),\s*wind_t::(\w+)\)'
 $flagValues = @{ WIN_FLAG_DISCARD=0; WIN_FLAG_SELF_DRAWN=1; WIN_FLAG_LAST_TILE=2; WIN_FLAG_KONG_INVOLVED=4; WIN_FLAG_WALL_LAST=8; WIN_FLAG_INITIAL=16 }

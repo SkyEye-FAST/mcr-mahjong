@@ -1,5 +1,6 @@
 package top.skyeyefast.mcr
 
+import top.skyeyefast.mcr.internal.UpstreamFan as Fan
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Timeout

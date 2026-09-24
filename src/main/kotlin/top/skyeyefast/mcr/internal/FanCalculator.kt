@@ -4,8 +4,8 @@
  */
 package top.skyeyefast.mcr.internal
 
-import top.skyeyefast.mcr.Fan
-import top.skyeyefast.mcr.Fan.*
+import top.skyeyefast.mcr.internal.UpstreamFan as Fan
+import top.skyeyefast.mcr.internal.UpstreamFan.*
 
 internal data class RawScore(val total: Int, val table: IntArray)
 
@@ -231,6 +231,7 @@ internal object FanCalculator {
     fun calculate(
         tiles: IntArray, fixedPacks: IntArray, winTile: Int, flags: Int,
         prevalent: Int, seat: Int, flowers: Int = 0,
+        evaluate: (IntArray, IntArray?) -> Int = { table, _ -> total(table) },
     ): RawScore {
         val fixed = fixedPacks.size
         val empty = fanTable()
@@ -252,9 +253,9 @@ internal object FanCalculator {
         if (fixed == 0) {
             if (specialFan(standing, winTile, unique, corrected, temporary) ||
                 knittedFan(fixedTable, standing, fixedPacks, winTile, prevalent, seat, corrected, temporary) ||
-                nineGates(standing, winTile, seat, corrected, temporary)) maximum = total(temporary)
+                nineGates(standing, winTile, seat, corrected, temporary)) maximum = evaluate(temporary, null)
         } else if (fixed == 1) {
-            if (knittedFan(fixedTable, standing, fixedPacks, winTile, prevalent, seat, corrected, temporary)) maximum = total(temporary)
+            if (knittedFan(fixedTable, standing, fixedPacks, winTile, prevalent, seat, corrected, temporary)) maximum = evaluate(temporary, null)
         }
         if (maximum == 0 || temporary[SEVEN_PAIRS] == 1) {
             val heavenly = seat == 0 && fixed == 0 && (corrected and 17) == 17
@@ -263,7 +264,8 @@ internal object FanCalculator {
             for (packs in divide(standing, fixedPacks)) {
                 val current = fanTable()
                 regularFan(packs, fixedTable, standing, unique, fixed, winTile, uniqueWait, corrected, prevalent, seat, current)
-                val points = total(current)
+                // Normalize each candidate before comparison, not only the upstream winner.
+                val points = evaluate(current, packs)
                 if (points > maximum) { maximum = points; selected = current }
                 else if (points == maximum && (current[PURE_TRIPLE_CHOW] == 1 || temporary[SEVEN_PAIRS] == 1 || current[TRIPLE_PUNG] != 0)) selected = current
             }

@@ -17,5 +17,15 @@ fun main() {
         ScoreResult.NotWinning -> error("Expected knitted straight")
     }
     check(HandForm.KNITTED_STRAIGHT in McrMahjong.discards(hand, Tile.S7).first().completesForms)
+    // A standards correction must survive packaging and maximum-score selection.
+    val pairs = McrMahjong.score(Hand(Tiles.parse("44556m445566s55p")), Tile.M6,
+        WinContext(method = WinMethod.SELF_DRAW)) as ScoreResult.Winning
+    check(pairs.totalFan == 52 && pairs.count(Fan.SEVEN_PAIRS) == 1)
+    val mixed = McrMahjong.score(
+        Hand(Tiles.parse("345pEE67s"), listOf(Meld.Kong(Tile.M1), Meld.Kong(Tile.S2, RelativePlayer.LEFT))),
+        Tile.S8, WinContext(method = WinMethod.SELF_DRAW),
+    ) as ScoreResult.Winning
+    check(mixed.totalFan == 8 && mixed.meetsMinimum)
+    check(mixed.fans.single { it.isMixedKongPair }.points == 6)
     println("Kotlin / Gradle metadata consumer passed: $result")
 }

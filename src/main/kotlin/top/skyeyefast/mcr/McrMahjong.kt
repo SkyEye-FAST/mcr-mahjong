@@ -1,6 +1,6 @@
 package top.skyeyefast.mcr
 
-import top.skyeyefast.mcr.internal.FanCalculator
+import top.skyeyefast.mcr.internal.StandardMcr
 import top.skyeyefast.mcr.internal.Shanten
 import top.skyeyefast.mcr.internal.TABLE_SIZE
 
@@ -79,6 +79,9 @@ class DiscardAnalysis private constructor(
  * Callers must not mutate a supplied collection concurrently with the call reading it.
  */
 object McrMahjong {
+    /** Fixed public scoring contract; see COMPATIBILITY.md for its source and release-review limits. */
+    const val SCORING_PROFILE: String = "wmo-2006-en"
+
     /**
      * Calculates structural shanten and effective tiles for a hand before drawing.
      * [visibleTiles] are additional known tiles, excluding this hand and its melds.
@@ -127,20 +130,16 @@ object McrMahjong {
         })
     }
 
-    /** Invalid tile counts throw; a valid non-winning shape returns [ScoreResult.NotWinning]. */
+    /**
+     * Scores using the WMO 2006 English MCR baseline documented in COMPATIBILITY.md,
+     * not the upstream's default rule extensions. Invalid inputs throw; a valid
+     * non-winning shape returns [ScoreResult.NotWinning].
+     */
     @JvmStatic
     @JvmOverloads
     fun score(hand: Hand, winningTile: Tile, context: WinContext = WinContext()): ScoreResult {
         hand.validateAddition(winningTile)
-        val score = FanCalculator.calculate(
-            hand.standing(), hand.fixed(), winningTile.code, context.flags(),
-            context.prevalentWind.ordinal, context.seatWind.ordinal, context.flowerCount,
-        )
-        if (score.total == -3) return ScoreResult.NotWinning
-        check(score.total >= 0) { "Unexpected internal calculator result: ${score.total}" }
-        return ScoreResult.Winning.create(Fan.entries.filter { score.table[it.index] > 0 }.map {
-            FanCount(it, score.table[it.index])
-        })
+        return StandardMcr.calculate(hand, winningTile, context)
     }
 
     private fun knownCounts(hand: Hand, extra: List<Tile>): IntArray {

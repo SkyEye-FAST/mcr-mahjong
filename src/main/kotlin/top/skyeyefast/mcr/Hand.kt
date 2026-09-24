@@ -96,7 +96,6 @@ class Hand @JvmOverloads constructor(concealedTiles: List<Tile>, melds: List<Mel
  * @property lastTile Last physical copy (和绝张), not the last wall tile.
  * @property kongInvolved Replacement-tile self-draw or robbing a kong, according to [method].
  * @property wallLast Last wall tile: last-tile draw/claim according to [method].
- * @property initial Initial-hand interpretation; does not enable additional blessing fans.
  */
 data class WinContext @JvmOverloads constructor(
     val method: WinMethod = WinMethod.DISCARD,
@@ -106,11 +105,10 @@ data class WinContext @JvmOverloads constructor(
     val lastTile: Boolean = false,
     val kongInvolved: Boolean = false,
     val wallLast: Boolean = false,
-    val initial: Boolean = false,
 ) {
     init { require(flowerCount in 0..8) { "Flower count must be in 0..8" } }
     @JvmSynthetic
     internal fun flags(): Int = (if (method == WinMethod.SELF_DRAW) 1 else 0) or
         (if (lastTile) 2 else 0) or (if (kongInvolved) 4 else 0) or
-        (if (wallLast) 8 else 0) or (if (initial) 16 else 0)
+        (if (wallLast) 8 else 0)
 }
