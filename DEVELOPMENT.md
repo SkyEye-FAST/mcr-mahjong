@@ -108,27 +108,17 @@ A future release should follow these steps:
 5. Submit the signed bundle to Central Portal, review it there, and release it.
    Verify the published coordinates and artifacts before announcing availability.
 
-Central Portal uses the community
-[GradleUp NMCP plugin](https://gradleup.com/nmcp/) and Gradle's OpenPGP signing
-plugin. The configured `USER_MANAGED` mode stages an upload for separate release
-in the Portal. See the [Portal publisher API](https://central.sonatype.org/publish/publish-portal-api/).
-Supply the following through Gradle user properties or environment variables:
+Upload releases manually through Central Portal's
+[Publish Component form](https://central.sonatype.org/publish/publish-portal-upload/).
+Prepare a ZIP bundle using the Maven repository layout:
+`top/skyeyefast/mcr-mahjong/<version>/`. Include the library JAR, sources JAR,
+API documentation JAR, POM and Gradle module metadata, with an ASCII-armored
+OpenPGP detached signature (`.asc`) and MD5/SHA-1 checksums for each artifact.
+Sign the artifacts with your local GPG agent and verify each signature before
+packaging. Publish the public key through a
+[key server supported by Sonatype](https://central.sonatype.org/publish/requirements/gpg/).
 
-| Gradle property | Environment variable | Value |
-| --- | --- | --- |
-| `centralPortalUsername` | `CENTRAL_PORTAL_USERNAME` | Portal token username |
-| `centralPortalPassword` | `CENTRAL_PORTAL_PASSWORD` | Portal token password |
-| `signingKey` | `MAVEN_CENTRAL_SIGNING_KEY` | ASCII-armored OpenPGP private key |
-| `signingPassword` | `MAVEN_CENTRAL_SIGNING_PASSWORD` | Signing-key passphrase |
-
-Keep credentials outside the repository. Before uploading, publish the public
-key through a [key server supported by Sonatype](https://central.sonatype.org/publish/requirements/gpg/).
-The current build requires all four values for a Central upload:
-
-```shell
-./gradlew publishAggregationToCentralPortal
-```
-
-Maven Local publication works independently of Portal credentials. Git commit/tag
-signing and Maven artifact signing use separate configuration; prepare each for
-its corresponding release step.
+In Central Portal, select **Publish Component**, enter the release coordinates
+as the deployment name, and upload the ZIP. After validation, select **Publish**
+and wait for **Published**. Verify the artifacts in Maven Central against the
+local release bundle.
