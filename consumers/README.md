@@ -1,6 +1,6 @@
 # Independent consumers
 
-These projects resolve `top.skyeyefast:mcr-mahjong:0.1.0` from Maven Local.
+These projects resolve `top.skyeyefast:mcr-mahjong:0.1.1` from Maven Local.
 They are not included in the library build, do not access its source sets, and
 have no project/composite-build dependency on it. The parent wrapper is only
 used to launch Gradle.

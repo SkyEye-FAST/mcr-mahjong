@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.1.1 — 2026-10-10
 
 - Corrects All Green/All Terminals Seven Pairs to absorb one inevitable Tile Hog
   while retaining additional quads, before candidate selection.

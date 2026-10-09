@@ -31,8 +31,8 @@ and runs entirely on the JVM.
 
 ## Installation
 
-Version `0.1.0` is available from
-[Maven Central](https://central.sonatype.com/artifact/top.skyeyefast/mcr-mahjong/0.1.0).
+The current release version is `0.1.1`, with coordinates
+`top.skyeyefast:mcr-mahjong:0.1.1`. Maven Central publication is pending.
 With Gradle Kotlin DSL:
 
 ```kotlin
@@ -40,7 +40,7 @@ repositories {
     mavenCentral()
 }
 dependencies {
-    implementation("top.skyeyefast:mcr-mahjong:0.1.0")
+    implementation("top.skyeyefast:mcr-mahjong:0.1.1")
 }
 ```
 
@@ -50,7 +50,7 @@ With Maven:
 <dependency>
     <groupId>top.skyeyefast</groupId>
     <artifactId>mcr-mahjong</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
 </dependency>
 ```
 

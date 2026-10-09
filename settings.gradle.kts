@@ -12,7 +12,7 @@ nmcpSettings {
         username = centralPortalUsername
         password = centralPortalPassword
         publishingType = "USER_MANAGED"
-        publicationName = "top.skyeyefast:mcr-mahjong:0.1.0"
+        publicationName = "top.skyeyefast:mcr-mahjong:0.1.1"
     }
 }
 

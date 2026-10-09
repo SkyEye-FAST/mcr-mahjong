@@ -12,6 +12,6 @@ repositories {
     mavenCentral { content { excludeModule("top.skyeyefast", "mcr-mahjong") } }
 }
 
-dependencies { implementation("top.skyeyefast:mcr-mahjong:0.1.0") }
+dependencies { implementation("top.skyeyefast:mcr-mahjong:0.1.1") }
 tasks.withType<JavaCompile>().configureEach { options.release.set(17) }
 application { mainClass.set("example.JavaConsumer") }

@@ -92,7 +92,7 @@ eligibility, wall state and call legality.
 
 ## Versions and supported surface
 
-The library version (`0.1.0`) identifies the artifact and its API/implementation.
+The library version (`0.1.1`) identifies the artifact and its API/implementation.
 The scoring profile (`wmo-2014-zh`) identifies the rule source and the documented
 interpretation. The upstream commit identifies the port's algorithm baseline.
 These identifiers serve separate purposes: a library bug fix may retain the same
