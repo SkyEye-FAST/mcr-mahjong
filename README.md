@@ -32,7 +32,8 @@ and runs entirely on the JVM.
 ## Installation
 
 The current release version is `0.1.1`, with coordinates
-`top.skyeyefast:mcr-mahjong:0.1.1`. Maven Central publication is in progress.
+`top.skyeyefast:mcr-mahjong:0.1.1`. It is available from
+[Maven Central](https://central.sonatype.com/artifact/top.skyeyefast/mcr-mahjong/0.1.1).
 With Gradle Kotlin DSL:
 
 ```kotlin

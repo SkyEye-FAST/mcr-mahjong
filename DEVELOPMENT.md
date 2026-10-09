@@ -92,7 +92,9 @@ maintenance procedures.
 
 ## Release process
 
-Follow these steps for each release:
+Version `0.1.1` has a signed `v0.1.1` Git tag and is available from
+[Maven Central](https://central.sonatype.com/artifact/top.skyeyefast/mcr-mahjong/0.1.1).
+A future release should follow these steps:
 
 1. Review the intended API and scoring changes. Keep the profile, rule review and
    changelog aligned; resolve any newly recorded rule questions before tagging
@@ -106,14 +108,7 @@ Follow these steps for each release:
 5. Submit the signed bundle to Central Portal, review it there, and release it.
    Verify the published coordinates and artifacts before announcing availability.
 
-For manual publication, upload a signed ZIP bundle through Central Portal's
-[Publish Component form](https://central.sonatype.org/publish/publish-portal-upload/).
-The bundle follows the Maven repository layout and includes the library, sources,
-API documentation, POM and Gradle module metadata, with detached OpenPGP signatures
-and checksums. After validation, select **Publish** and wait for **Published**.
-This workflow uses your browser login and local GPG agent.
-
-For automated uploads, the build uses the community
+Central Portal uses the community
 [GradleUp NMCP plugin](https://gradleup.com/nmcp/) and Gradle's OpenPGP signing
 plugin. The configured `USER_MANAGED` mode stages an upload for separate release
 in the Portal. See the [Portal publisher API](https://central.sonatype.org/publish/publish-portal-api/).
