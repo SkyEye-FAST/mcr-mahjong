@@ -98,7 +98,7 @@ dokka {
 // Dokka is a build dependency only; it is never part of the published runtime.
 tasks.named<Jar>("javadocJar") {
     from(tasks.dokkaGeneratePublicationHtml.flatMap { it.outputDirectory })
-    from(listOf("README.md", "COMPATIBILITY.md", "CHANGELOG.md", "LICENSE", "NOTICE")) { into("guides") }
+    from(listOf("README.md", "COMPATIBILITY.md", "RULES_REVIEW.md", "DEVELOPMENT.md", "CHANGELOG.md", "LICENSE", "NOTICE")) { into("guides") }
     from("tools/README.md") { into("guides/tools") }
     from("consumers/README.md") { into("guides/consumers") }
 }

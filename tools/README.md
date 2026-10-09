@@ -1,6 +1,10 @@
 # Native differential verification
 
-These tools are optional developer tools, not runtime or normal CI dependencies.
+These optional tools compare the Kotlin compatibility engine with the pinned C++
+implementation. For normal builds, ABI checks and releases, see
+[DEVELOPMENT.md](../DEVELOPMENT.md). The [compatibility contract](../COMPATIBILITY.md)
+describes the upstream profile and the separate public scoring rules.
+
 Run commands from the repository root. The upstream checkout and build outputs
 stay in ignored `.reference/`, so a library `clean` cannot delete the reference
 needed by differential verification. Do not commit or publish native binaries.
@@ -29,12 +33,12 @@ cmake --build .reference/oracle
 gradlew.bat differentialTest -PoraclePath=C:/Java/mcr-mahjong/.reference/oracle/oracle.exe
 ```
 
-Adjust the absolute oracle path when the repository is elsewhere. No extra feature
-defines are needed: the defaults pinned in NOTICE are the compatibility baseline.
+Adjust the absolute oracle path when the repository is elsewhere. The default
+feature switches in [COMPATIBILITY.md](../COMPATIBILITY.md#upstream-baseline)
+select the compatibility baseline.
 CMake checks all nine files against `tools/upstream.sha256` before compiling and
 embeds the manifest fingerprint. The adapter also asserts the feature switches
-and fan-table size at compile time. Rebuild through CMake when source files change;
-the old unchecked direct-compiler invocation is intentionally not supported.
+and fan-table size at compile time. Rebuild through CMake when source files change.
 
 ## What is compared
 
