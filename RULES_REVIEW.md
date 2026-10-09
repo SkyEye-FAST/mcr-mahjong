@@ -62,7 +62,7 @@ the implemented decision. Chinese quotations preserve the basis of the original 
 | 附件一第4、6、7、12、19、20、34番, pp. 23–35: each says self-draw “加计不求人分” | The special-hand path normally contributes the one-point Self Drawn fan. | Award Fully Concealed Hand (4) in place of Self Drawn for Nine Gates, Seven Shifted Pairs, Thirteen Orphans, Four Concealed Pungs, Seven Pairs, and Greater/Lesser Honors and Knitted Tiles. Seven Shifted Pairs has a separate regression case. |
 | 附件一第3番「绿一色」, p. 23: “可加计清一色、混一色分” | The raw exclusion pass removes Half Flush. | Restore Half Flush when green dragons are present; retain Full Flush when there are no honors. Each case has a separate test. |
 | 附件一第8番「清幺九」, p. 26: excludes 碰碰和、全带幺、幺九刻、无字; examples permit “两个双同刻” or “三同刻” | Removes Double Pung whenever All Terminals is present. | Restore Double Pungs from the candidate's actual pungs; a Seven Pairs candidate supplies no pungs. Triple Pung absorbs its constituent pairs under the non-repetition/non-splitting principles (printed p. 19). |
-| 附件一第4番「九莲宝灯」, p. 24: excludes 清一色、门前清、幺九刻; 第6番「连七对」, pp. 24–25: excludes 清一色、门前清、单调将; 第19番「七对」, p. 31: excludes 门前清、单调将 | These special paths do not emit those excluded fans. | Retain these exclusions; independent assertions cover the high-impact special-hand and self-draw cases. |
+| 附件一第4番「九莲宝灯」, p. 24: excludes 清一色、门前清、幺九刻; 第6番「连七对」, pp. 24–25: excludes 清一色、门前清、单调将; 第19番「七对」, p. 31: excludes 门前清、单调将 | Nine Gates absorbs one terminal pung; other special-form exclusions remain as recorded. | Retain current behavior; the terminal-pung scope is reviewed below. |
 | 附件一第20番「七星不靠」, p. 31, and 第34番「全不靠」, p. 34: self-draw adds 不求人; both exclude 五门齐、门前清 | Raw special-form scoring does not add Fully Concealed Hand. | Add Fully Concealed Hand on self-draw and retain the named exclusions. |
 | 附件一第35番「组合龙」, p. 35, definition and example 1; 3.9.1(6) 不拆移原则, p. 19 (“不拆开互相组成其他番种”); 附件一第77–79番等待定义, pp. 45–46 (“只能听和123的3或789的7”, “只能听和顺子中间的牌”, “调单张牌作将和牌”) | With `KNITTED_STRAIGHT_BODY_WITH_ECS=1`, the raw path removes the knitted body and evaluates the wait in the residual structure. It can count edge/closed/single wait when the winning tile kind also occurs in the body, provided another physical copy completes the residual wait. | Retain the upstream residual-wait behavior under the project interpretation derived below. Tests cover overlapping edge, closed and single waits, body-only completion and residuals with two winning tile kinds. |
 
@@ -102,6 +102,96 @@ This interpretation is adopted for `wmo-2014-zh`. Its regression cases establish
 that the software follows the decision, while the cited clauses and this derivation
 allow the decision itself to be reviewed.
 
+The [2024 Canadian supplement](https://www.mahjong-ca.org/补充规则和计分表/)
+allows residual wait fans when the winning kind also belongs to the knitted body.
+The [organizer explanation](https://www.mahjong-ca.org/2024/11/承办麻将世锦赛的前前后后之二十三-技术准备之补/)
+gives `147s12358m36999p` winning on `2m`: allocate `147s258m369p`, leaving
+`13m99p`, uniquely completed by `2m`. The equivalent added case
+`12358s33369p147m` winning on `2s` leaves `13s33p` after allocating
+`147m258s369p`. Both score Closed Wait and total 17 on discard. These sources
+state a 2006 baseline and apply to the named event; the project retains the
+Chinese residual-structure interpretation described above.
+
+## Seven Pairs and Tile Hog
+
+The All Green example (Chinese p. 23) awards Seven Pairs, Half Flush and Fully
+Concealed Hand, absorbing its one four-copy group. The non-repetition principle
+(p. 19) explains this: All Green and All Terminals each offer six tile kinds, so
+seven pairs necessarily use at least one kind twice. The older
+[Chinese scan](https://mahjongswiss.ch/media/upload/user_upload/event_uploads/%2020110128.pdf)
+explicitly explains the six-kind necessity in its Seven Pairs example (p. 29).
+
+The project derives a deduction of one Tile Hog from that necessity. Additional
+quads are optional and retain their two-point awards. `StandardMcr` applies this
+only to the compound Seven Pairs candidate, before candidate selection. Ordinary
+Seven Pairs retains all quads; regular candidates keep their own exclusions.
+Tests cover ordinary zero through three quads, compound one through three, and
+competing four-identical-chows decomposition. A zero-quad compound is impossible
+with six available kinds; fourteen tiles permit at most three quads.
+
+## Nine Gates terminal-pung question
+
+The Chinese clause (p. 24), the
+[2006 English scan](https://mahjong-ca.org/wp-content/uploads/2019/07/mje0906.pdf)
+(p. 34) and later trilingual English text (p. 32) list terminal-pung exclusion.
+Two readings remain: absorb the entire fan, or absorb the one terminal pung
+inevitable in every Nine Gates decomposition. Winning on 2, 5 or 8 permits two
+terminal pungs and distinguishes these readings by one point.
+
+The pinned algorithm and GB-Mahjong absorb one. The review has not located an
+explicit ruling on the second pung, so this profile retains its recorded behavior.
+Characterization tests cover all nine winning ranks on discard and self-draw.
+Discard totals remain 106, 92, 89, 89, 91, 89, 89, 92 and 106; self-draw adds
+Fully Concealed Hand (4). These tests characterize the open interpretation.
+
+## Editions and implementation comparisons
+
+The [Greenbook2021-labelled file](https://mahjongclublausanne.ch/wp-content/uploads/2024/03/Greenbook2021_Chinese-EN.pdf)
+has ISBN `962-8785-33-8`. Its copyright page records December 2014 second
+edition/first printing following a 2006 first edition. Chinese/Japanese entries
+say July 2006; the English entry says June. The selected Chinese-only 2014 book
+has its own publisher and ISBN above. The filename is a distribution label.
+
+The older English Four Kongs clause (p. 34) refers to concealed pungs; the later
+English text (p. 32) refers to concealed kongs, aligning with the Chinese clause.
+This is translation alignment. The older six-point Two Concealed Kongs versus
+the selected eight-point table is a scoring difference. Chinese Seven Pairs and
+Seven Shifted Pairs explicitly add Fully Concealed Hand on self-draw (pp. 31,
+24–25), as do the English clauses. The shifted-pairs regression checks its
+88-point category plus four on self-draw, with ordinary Seven Pairs absorbed.
+Flower terminology and penalty differences concern literature and game
+administration; the library represents flowers as a count.
+
+| Inspected implementation | Relevant behavior |
+| --- | --- |
+| [mahjong-algorithm](https://github.com/summerinsects/mahjong-algorithm/blob/44a178af08bf11f82a8993fddbe2fe8876ddd8f3/fan_calculator.cpp) | Counts all compound Seven Pairs quads; retains one Nine Gates terminal pung on 2/5/8; raw mixed kongs score five and Two Concealed Kongs six. |
+| [GB-Mahjong](https://github.com/zheng-fan/GB-Mahjong/blob/ace2c52f13e1ae4473fc267d8a86504167708334/mahjong/fan.cpp) | Separate C++ implementation; pair DFS allows four copies as two pairs. Counts all quads and subtracts one Nine Gates terminal pung. Omits separate one/two concealed-kong additions with Three/Four Kongs; special self-draw uses Self Drawn. |
+| [majiang_calculator](https://github.com/alanfeiyuchang/majiang_calculator/blob/66216fe015958a34be76e35158a51338814edfae/majiang%20calculator/MCRScoring.swift) | Swift implementation with selectable policies; frequency scoring counts all quads and finalization subtracts one Nine Gates terminal pung. Its defaults follow its documented oracle policy. |
+
+The Swift project's
+[reference report](https://github.com/alanfeiyuchang/majiang_calculator/blob/66216fe015958a34be76e35158a51338814edfae/Tests/data/mcr_reference.md)
+identifies PyMahjongGB as its oracle and the vendored summerinsects engine as its
+source. That chain supplies one algorithm comparison. GB-Mahjong supplies a
+separate implementation comparison. Rule decisions use the clauses and derivations
+recorded here rather than a count of agreeing implementations.
+
+## Concealed sets and initial-hand branches
+
+Three/Four Kongs retain the Chinese concealed-kong interpretation. One concealed
+kong adds Concealed Kong; two add Two Concealed Kongs and absorb Two Concealed
+Pungs formed by those same sets. An additional concealed pung allows Three
+Concealed Pungs. Three concealed kongs use Three Concealed Pungs, or Four Concealed
+Pungs with a fourth concealed set. Each concealed-set series contributes its
+highest applicable fan. Tests cover zero through three concealed kongs with a
+chow, a pung completed by discard/self-draw, and a fixed exposed pung, plus all
+five Four Kongs concealment counts, asserting the complete combination.
+
+`NINE_GATES_WHEN_BLESSING_OF_HEAVEN=1` permits recognition in the raw initial east
+self-draw branch without requiring the supplied tile to be the ninth-way winning
+tile. It preserves the pinned extra-nine `r = 2` quirk. `SUPPORT_BLESSINGS=0`
+keeps blessing fans disabled. Public `WinContext` supplies no initial-hand flag;
+these branches serve upstream verification rather than a public Heaven rule.
+
 ## Implementation and test map
 
 Source links below point to the repository. Symbol names identify the relevant
@@ -123,6 +213,11 @@ Their expectations are independent of the C++ fixture generator.
 
 | Decision | Test method |
 | --- | --- |
+| Compound Seven Pairs quad deduction | `sevenPairsSubtractOnlyOneInevitableTileHog` |
+| Candidate-specific quad exclusions | `regularAllGreenCandidateRetainsItsOwnTileHogExclusions` |
+| Nine Gates retained interpretation | `nineGatesRetainsTheRecordedTerminalPungInterpretation` |
+| Shifted-pairs category and self-draw | `sevenShiftedPairsAddsFullyConcealedWithoutRepeatingSevenPairs` |
+| Three Kongs with fixed fourth pung | `threeKongsWithAFixedPungKeepTheSameConcealedKongExclusions` |
 | Public 81-fan vocabulary and raw 82-entry values | `publicVocabularyIsStandardAndOracleVocabularyIsNotChanged` |
 | Mixed-kong six-point exception and marker validation | `mixedKongsUseTheSixPointClauseAndCanReachMinimum` |
 | Two Concealed Kongs and flower accounting | `twoConcealedKongsAreEightAndFlowersStaySeparate` |

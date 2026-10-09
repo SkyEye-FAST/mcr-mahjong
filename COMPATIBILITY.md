@@ -14,10 +14,11 @@ reports the selected fan breakdown, `totalFan` including flowers, `nonFlowerFan`
 and `meetsMinimum` (`nonFlowerFan >= 8`). A winning shape below eight non-flower
 points remains `Winning`. The caller handles full-game legality and settlement.
 
-The project's rule review and software checks are complete for the recorded scope.
+The project's recorded review covers the scoring decisions and software checks below.
 The POM field `mcr.rules.review.status=complete` refers to this project review,
 not WMO certification. The review adopts the documented Knitted Straight
-residual-wait interpretation; its derivation remains available for further review.
+residual-wait interpretation. The scope of Nine Gates terminal-pung exclusion
+remains open; current behavior and competing readings are recorded in the review.
 
 ### Differences from upstream scoring
 
@@ -27,6 +28,7 @@ residual-wait interpretation; its derivation remains available for further revie
 | Two Concealed Kongs | Eight points. |
 | Three/Four Kongs | Apply the concealed-kong clauses and the concealed-pung combinations recorded in the review. |
 | Special forms on self-draw | Add Fully Concealed Hand where the Chinese clauses specify it. |
+| Compound Seven Pairs | Absorb one inevitable Tile Hog for All Green/All Terminals; additional quads score. |
 | All Green | Retain the permitted Half Flush or Full Flush combination. |
 | All Terminals | Retain independent Double Pungs, with Triple Pung absorbing its constituent pairs. |
 

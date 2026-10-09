@@ -89,6 +89,86 @@ class StandardMcrTest {
     }
 
     @Test
+    fun sevenPairsSubtractOnlyOneInevitableTileHog() {
+        // Chinese non-repetition principle and the All Green seven-pairs example:
+        // six available tile kinds force one quad, but not a second or third.
+        val cases = listOf(
+            Triple("223344668888sFF", Fan.ALL_GREEN, 1),
+            Triple("22333344668888s", Fan.ALL_GREEN, 2),
+            Triple("22223333666688s", Fan.ALL_GREEN, 3),
+            Triple("1199m1199s119999p", Fan.ALL_TERMINALS, 1),
+            Triple("11119999m1199s11p", Fan.ALL_TERMINALS, 2),
+            Triple("11119999m1111s99p", Fan.ALL_TERMINALS, 3),
+        )
+        for ((text, compound, quads) in cases) for (selfDrawn in listOf(false, true)) {
+            val result = score(text, selfDrawn)
+            assertEquals(1, result.count(Fan.SEVEN_PAIRS), text)
+            assertEquals(1, result.count(compound), text)
+            assertEquals(quads - 1, result.count(Fan.TILE_HOG), text)
+            assertEquals(result.totalFan, result.fans.sumOf { it.points }, text)
+        }
+        // Ordinary Seven Pairs has no inevitable quad: retain zero through three.
+        for ((quads, text) in listOf(
+            "113355m2277s4499p", "111133m2277s4499p",
+            "11113333m77s4499p", "11113333m7777s99p",
+        ).withIndex()) {
+            val result = score(text)
+            assertEquals(1, result.count(Fan.SEVEN_PAIRS), text)
+            assertEquals(quads, result.count(Fan.TILE_HOG), text)
+        }
+        // The raw compatibility vocabulary and full quad count remain unchanged.
+        val raw = ReferenceProtocol.compactScore(ReferenceProtocol.calculate("F|223344668888sFF|1|0|0|0"))
+        assertTrue(raw.contains("TILE_HOG=1"))
+    }
+
+    @Test
+    fun regularAllGreenCandidateRetainsItsOwnTileHogExclusions() {
+        // This hand is also Seven Pairs with three quads, but four 234 chows score more.
+        // The seven-pairs deduction must not leak into the regular candidate.
+        val result = score("22223333444466s")
+        assertEquals(1, result.count(Fan.ALL_GREEN))
+        assertEquals(1, result.count(Fan.QUADRUPLE_CHOW))
+        assertEquals(0, result.count(Fan.SEVEN_PAIRS))
+        assertEquals(0, result.count(Fan.TILE_HOG))
+        assertEquals(166, result.totalFan)
+        assertEquals(result.totalFan, result.fans.sumOf { it.points })
+        // A regular All Green hand may also score a non-inevitable Tile Hog.
+        val pung = score("[222s][234s][666s][FFF]8s8s")
+        assertEquals(1, pung.count(Fan.TILE_HOG))
+        assertEquals(0, pung.count(Fan.SEVEN_PAIRS))
+    }
+
+    @Test
+    fun nineGatesRetainsTheRecordedTerminalPungInterpretation() {
+        // Characterize the unresolved one-pung vs whole-fan exclusion in RULES_REVIEW.md.
+        // These are retained results, not a new rule decision.
+        val discardTotals = listOf(106, 92, 89, 89, 91, 89, 89, 92, 106)
+        for (rank in 1..9) for (selfDrawn in listOf(false, true)) {
+            val result = score("1112345678999m${rank}m", selfDrawn)
+            assertEquals(1, result.count(Fan.NINE_GATES))
+            assertEquals(if (rank in listOf(2, 5, 8)) 1 else 0, result.count(Fan.PUNG_OF_TERMINALS_OR_HONORS))
+            assertEquals(discardTotals[rank - 1] + if (selfDrawn) 4 else 0, result.totalFan)
+            assertEquals(if (selfDrawn) 1 else 0, result.count(Fan.FULLY_CONCEALED_HAND))
+            for (excluded in listOf(Fan.FULL_FLUSH, Fan.CONCEALED_HAND, Fan.SELF_DRAWN)) {
+                assertEquals(0, result.count(excluded))
+            }
+            assertEquals(result.totalFan, result.fans.sumOf { it.points })
+        }
+    }
+
+    @Test
+    fun sevenShiftedPairsAddsFullyConcealedWithoutRepeatingSevenPairs() {
+        // Chinese fans 6 and 19 add Fully Concealed Hand on self-draw.
+        // A shifted-pairs hand uses its 88-point category, not an extra ordinary Seven Pairs.
+        for (selfDrawn in listOf(false, true)) {
+            val result = score("11223344556677m", selfDrawn)
+            assertEquals(listOf(FanCount(Fan.SEVEN_SHIFTED_PAIRS, 1)) +
+                if (selfDrawn) listOf(FanCount(Fan.FULLY_CONCEALED_HAND, 1)) else emptyList(), result.fans)
+            assertEquals(if (selfDrawn) 92 else 88, result.totalFan)
+        }
+    }
+
+    @Test
     fun normalizationPrecedesBestDecompositionSelection() {
         // Upstream prefers the regular 49-point interpretation in a 49/49 tie.
         // The standard seven-pairs interpretation is 24 + 24 + 4 = 52, not 49.
@@ -107,12 +187,15 @@ class StandardMcrTest {
         // the knitted body with a residual wait. Wait definitions (pp. 45-46)
         // require that the residual hand has only that winning tile. These cases
         // deliberately use a winning tile also present in the knitted body; the
-        // residual can use only its separate physical copy. Each 19-point total
+        // residual can use only its separate physical copy. Each expected total
         // sums the selected fans using the Chinese table values (pp. 12-14).
         val cases = listOf(
             Triple("1233369m147s258p3m", Fan.EDGE_WAIT, 19),
             Triple("2333469m147s258p3m", Fan.CLOSED_WAIT, 19),
             Triple("3369m147s258pEEE3m", Fan.SINGLE_WAIT, 19),
+            // 2024 Canadian event example and its suit/rank-equivalent residual 13 + pair.
+            Triple("12358s33369p147m2s", Fan.CLOSED_WAIT, 17),
+            Triple("147s12358m36999p2m", Fan.CLOSED_WAIT, 17),
         )
         for ((text, waitFan, total) in cases) {
             val result = score(text)
@@ -163,11 +246,11 @@ class StandardMcrTest {
         // Chinese MCR Annex I (printed p. 23): Green One explicitly allows
         // Half Flush with green dragons and Full Flush without honors.
         val result = score("223344668888sFF", selfDrawn = true)
-        assertEquals(124, result.totalFan)
+        assertEquals(122, result.totalFan)
         assertEquals(1, result.count(Fan.ALL_GREEN))
         assertEquals(1, result.count(Fan.SEVEN_PAIRS))
         assertEquals(1, result.count(Fan.HALF_FLUSH))
-        assertEquals(1, result.count(Fan.TILE_HOG))
+        assertEquals(0, result.count(Fan.TILE_HOG))
         assertEquals(1, result.count(Fan.FULLY_CONCEALED_HAND))
         val pureSuit = score("22334466888866s", selfDrawn = true)
         assertEquals(1, pureSuit.count(Fan.ALL_GREEN))
@@ -176,92 +259,97 @@ class StandardMcrTest {
         assertEquals(0, score("[234s][234s][234s][234s]6s6s").count(Fan.HALF_FLUSH))
     }
 
+    private fun assertKongCombinations(result: ScoreResult.Winning, vararg expected: Fan) {
+        for (fan in listOf(Fan.CONCEALED_KONG, Fan.TWO_CONCEALED_KONGS,
+            Fan.TWO_CONCEALED_PUNGS, Fan.THREE_CONCEALED_PUNGS, Fan.FOUR_CONCEALED_PUNGS,
+            Fan.MELDED_KONG, Fan.TWO_MELDED_KONGS)) {
+            assertEquals(if (fan in expected) 1 else 0, result.count(fan), "$fan in $result")
+        }
+        assertEquals(result.totalFan, result.fans.sumOf { it.points })
+    }
+
     @Test
     fun threeKongsApplyTheChineseConcealedKongClause() {
-        // Chinese MCR Annex I, fan 17 (printed p. 28): concealed kongs add;
-        // three concealed kongs also add Three Concealed Pungs.
-        val one = score("[2222s][3333s1][5555p1]67mEE8m")
-        assertEquals(34, one.totalFan)
-        assertEquals(1, one.count(Fan.THREE_KONGS))
-        assertEquals(1, one.count(Fan.CONCEALED_KONG))
-        val two = score("[2222s][3333s][5555p1]67mEE8m")
-        assertEquals(40, two.totalFan)
-        assertEquals(1, two.count(Fan.TWO_CONCEALED_KONGS))
-        assertEquals(0, two.count(Fan.TWO_CONCEALED_PUNGS))
-        val three = score("[2222s][3333s][5555p]67mEE8m")
-        assertEquals(50, three.totalFan)
-        assertEquals(1, three.count(Fan.THREE_CONCEALED_PUNGS))
-        assertEquals(0, three.count(Fan.TWO_CONCEALED_KONGS))
-        assertEquals(0, three.count(Fan.CONCEALED_KONG))
+        // Chinese fan 17 (p. 28): add concealed kongs; three add Three Concealed Pungs.
+        val expected = listOf(32, 34, 40, 50)
+        val awards = listOf(emptyArray(), arrayOf(Fan.CONCEALED_KONG),
+            arrayOf(Fan.TWO_CONCEALED_KONGS), arrayOf(Fan.THREE_CONCEALED_PUNGS))
+        for (concealed in 0..3) {
+            val melds = listOf(Tile.S2, Tile.S3, Tile.P5).mapIndexed { index, tile ->
+                Meld.Kong(tile, if (index < concealed) null else RelativePlayer.LEFT)
+            }
+            val result = assertIs<ScoreResult.Winning>(McrMahjong.score(
+                Hand(Tiles.parse("67mEE"), melds), Tile.M8,
+            ))
+            assertEquals(expected[concealed], result.totalFan, "concealed=$concealed")
+            assertEquals(1, result.count(Fan.THREE_KONGS))
+            assertKongCombinations(result, *awards[concealed])
+        }
     }
 
     @Test
     fun threeKongsCombineConcealedKongsWithTheConcealedPungSeries() {
-        // Chinese MCR Annex I, fan 17 (p. 28), plus Three Concealed Pungs (p. 33):
-        // concealed kongs also qualify as concealed pungs for the concealed-set series.
-        val kongTiles = listOf(Tile.M2, Tile.S5, Tile.P8)
-        val expectedTotals = listOf(43, 63, 100)
-        for (concealed in 1..3) {
-            val melds = kongTiles.mapIndexed { index, tile ->
+        // The fourth pung is concealed on self-draw, exposed when completed by discard.
+        val selfDrawnTotals = listOf(39, 43, 63, 100)
+        val discardTotals = listOf(38, 40, 46, 56)
+        for (concealed in 0..3) for (selfDrawn in listOf(false, true)) {
+            val melds = listOf(Tile.M2, Tile.S5, Tile.P8).mapIndexed { index, tile ->
                 Meld.Kong(tile, if (index < concealed) null else RelativePlayer.LEFT)
             }
-            val result = McrMahjong.score(
+            val result = assertIs<ScoreResult.Winning>(McrMahjong.score(
                 Hand(listOf(Tile.M4, Tile.M4, Tile.EAST, Tile.EAST), melds), Tile.M4,
-                WinContext(method = WinMethod.SELF_DRAW),
-            ) as ScoreResult.Winning
-            assertEquals(expectedTotals[concealed - 1], result.totalFan, "concealed=$concealed $result")
-            assertEquals(result.totalFan, result.fans.sumOf { it.points }, "concealed=$concealed")
+                WinContext(method = if (selfDrawn) WinMethod.SELF_DRAW else WinMethod.DISCARD),
+            ))
+            assertEquals((if (selfDrawn) selfDrawnTotals else discardTotals)[concealed], result.totalFan)
             assertEquals(1, result.count(Fan.THREE_KONGS))
-            when (concealed) {
-                1 -> {
-                    assertEquals(1, result.count(Fan.CONCEALED_KONG))
-                    assertEquals(1, result.count(Fan.TWO_CONCEALED_PUNGS))
-                    assertEquals(0, result.count(Fan.TWO_CONCEALED_KONGS))
-                }
-                2 -> {
-                    assertEquals(1, result.count(Fan.TWO_CONCEALED_KONGS))
-                    assertEquals(1, result.count(Fan.THREE_CONCEALED_PUNGS))
-                    assertEquals(0, result.count(Fan.TWO_CONCEALED_PUNGS))
-                }
-                3 -> {
-                    assertEquals(1, result.count(Fan.FOUR_CONCEALED_PUNGS))
-                    assertEquals(1, result.count(Fan.FULLY_CONCEALED_HAND))
-                    assertEquals(0, result.count(Fan.CONCEALED_KONG))
-                }
+            val awards = when (concealed) {
+                0 -> emptyArray()
+                1 -> if (selfDrawn) arrayOf(Fan.CONCEALED_KONG, Fan.TWO_CONCEALED_PUNGS) else arrayOf(Fan.CONCEALED_KONG)
+                2 -> if (selfDrawn) arrayOf(Fan.TWO_CONCEALED_KONGS, Fan.THREE_CONCEALED_PUNGS) else arrayOf(Fan.TWO_CONCEALED_KONGS)
+                else -> arrayOf(if (selfDrawn) Fan.FOUR_CONCEALED_PUNGS else Fan.THREE_CONCEALED_PUNGS)
             }
+            assertKongCombinations(result, *awards)
+        }
+    }
+
+    @Test
+    fun threeKongsWithAFixedPungKeepTheSameConcealedKongExclusions() {
+        // Fixed fourth pung, winning on the pair: distinct from a pung completed by discard.
+        val expected = listOf(44, 41, 47, 55)
+        val awards = listOf(emptyArray(), arrayOf(Fan.CONCEALED_KONG),
+            arrayOf(Fan.TWO_CONCEALED_KONGS), arrayOf(Fan.THREE_CONCEALED_PUNGS))
+        for (concealed in 0..3) {
+            val melds = listOf(Tile.M2, Tile.S5, Tile.P8).mapIndexed { index, tile ->
+                Meld.Kong(tile, if (index < concealed) null else RelativePlayer.LEFT)
+            } + Meld.Pung(Tile.M4)
+            val result = assertIs<ScoreResult.Winning>(McrMahjong.score(Hand(listOf(Tile.EAST), melds), Tile.EAST))
+            assertEquals(expected[concealed], result.totalFan)
+            assertEquals(1, result.count(Fan.THREE_KONGS))
+            assertKongCombinations(result, *awards[concealed])
         }
     }
 
     @Test
     fun fourKongsAddConcealedKongFansAndKeepTheFourConcealedPungCombination() {
-        // Chinese MCR Annex I (printed p. 24): Four Kongs adds concealed kongs
-        // and excludes Single Wait. The fan table (printed pp. 12-14) supplies
-        // the concealed-kong / concealed-pung values.
-        val tiles = listOf(Tile.M2, Tile.M8, Tile.S4, Tile.P7)
+        // Chinese fan 5 (p. 24): concealed kongs add; Single Wait is excluded.
         val expected = listOf(94, 90, 96, 104, 156)
+        val awards = listOf(emptyArray(), arrayOf(Fan.CONCEALED_KONG), arrayOf(Fan.TWO_CONCEALED_KONGS),
+            arrayOf(Fan.THREE_CONCEALED_PUNGS), arrayOf(Fan.FOUR_CONCEALED_PUNGS))
         for (concealed in 0..4) {
-            val melds = tiles.mapIndexed { index, tile ->
+            val melds = listOf(Tile.M2, Tile.M8, Tile.S4, Tile.P7).mapIndexed { index, tile ->
                 Meld.Kong(tile, if (index < concealed) null else RelativePlayer.LEFT)
             }
             val result = assertIs<ScoreResult.Winning>(McrMahjong.score(
                 Hand(listOf(Tile.EAST), melds), Tile.EAST,
                 WinContext(method = if (concealed == 4) WinMethod.SELF_DRAW else WinMethod.DISCARD),
             ))
-            assertEquals(expected[concealed], result.totalFan, "concealed=$concealed $result")
-            assertEquals(result.totalFan, result.fans.sumOf { it.points }, "concealed=$concealed")
-            assertEquals(0, result.count(Fan.SINGLE_WAIT), "concealed=$concealed")
-            when (concealed) {
-                1 -> assertEquals(1, result.count(Fan.CONCEALED_KONG))
-                2 -> {
-                    assertEquals(1, result.count(Fan.TWO_CONCEALED_KONGS))
-                    assertEquals(0, result.count(Fan.TWO_CONCEALED_PUNGS))
-                }
-                3 -> assertEquals(1, result.count(Fan.THREE_CONCEALED_PUNGS))
-                4 -> {
-                    assertEquals(1, result.count(Fan.FOUR_CONCEALED_PUNGS))
-                    assertEquals(1, result.count(Fan.FULLY_CONCEALED_HAND))
-                    assertEquals(0, result.count(Fan.SELF_DRAWN))
-                }
+            assertEquals(expected[concealed], result.totalFan, "concealed=$concealed")
+            assertEquals(1, result.count(Fan.FOUR_KONGS))
+            assertEquals(0, result.count(Fan.SINGLE_WAIT))
+            assertKongCombinations(result, *awards[concealed])
+            if (concealed == 4) {
+                assertEquals(1, result.count(Fan.FULLY_CONCEALED_HAND))
+                assertEquals(0, result.count(Fan.SELF_DRAWN))
             }
         }
     }
@@ -271,7 +359,7 @@ class StandardMcrTest {
         val jobs = listOf(
             "[1111m][2222s1]345pEE67s8s" to 8,
             "44556m445566s55p6m" to 52,
-            "223344668888sFF" to 124,
+            "223344668888sFF" to 122,
             "19m19s19pESWNCFPN" to 92,
         )
         val executor = java.util.concurrent.Executors.newFixedThreadPool(4)

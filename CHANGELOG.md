@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- Corrects All Green/All Terminals Seven Pairs to absorb one inevitable Tile Hog
+  while retaining additional quads, before candidate selection.
+- Extends tests for quad counts, knitted residual waits, Nine Gates winning ranks
+  and concealed-kong combinations. Records the retained Nine Gates question and
+  source/implementation comparisons in the rule review.
+
 ## 0.1.0 — 2026-09-24
 
 Initial Kotlin/JVM 17 release, based on the MIT-licensed `mahjong-algorithm`

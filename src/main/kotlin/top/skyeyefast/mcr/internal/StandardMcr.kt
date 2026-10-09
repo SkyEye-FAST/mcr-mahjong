@@ -31,6 +31,13 @@ internal object StandardMcr {
                 table[HALF_FLUSH] = 1
             }
 
+            // Seven Pairs drawn from the six All Green / All Terminals tile kinds
+            // necessarily has one Tile Hog. Absorb that one under the Chinese
+            // non-repetition principle; additional quads still score (RULES_REVIEW.md).
+            if (table[SEVEN_PAIRS] != 0 && (table[ALL_GREEN] != 0 || table[ALL_TERMINALS] != 0)) {
+                table[TILE_HOG]--
+            }
+
             // Chinese Appendix I (printed pp. 24, 28 and 33): concealed kongs
             // add the corresponding kong fan. Three concealed kongs additionally
             // score Three Concealed Pungs; Four Kongs excludes Single Wait.
